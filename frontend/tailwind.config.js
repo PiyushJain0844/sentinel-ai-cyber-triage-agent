@@ -9,15 +9,18 @@ export default {
       colors: {
         sentinel: {
           bg: "#080D18",
-          secondary: "#101827",
-          card: "#151F30",
-          cardHover: "#1A273D",
-          border: "#1E293B",
+          secondary: "#0D1422",
+          card: "#141E2E",
+          cardHover: "#192538",
+          elevated: "#192538",
+          border: "#1E2B42",
+          borderLight: "#24344D",
           accent: "#38BDF8",
           accentHover: "#0EA5E9",
           success: "#22C55E",
           warning: "#F59E0B",
           danger: "#EF4444",
+          critical: "#EF4444",
           textPrimary: "#F8FAFC",
           textSecondary: "#94A3B8",
           textMuted: "#64748B"

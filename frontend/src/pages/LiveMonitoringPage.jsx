@@ -4,14 +4,9 @@ import { useSentinel } from '../context/SentinelContext';
 import { SeverityBadge } from '../components/StatusBadge';
 import { 
   Search, 
-  Filter, 
   RotateCw, 
   PlusCircle, 
-  ShieldAlert, 
-  Database,
-  ArrowRight,
-  Terminal,
-  Cpu
+  Database
 } from 'lucide-react';
 
 export const LiveMonitoringPage = () => {
@@ -66,7 +61,7 @@ export const LiveMonitoringPage = () => {
         }
       };
       await api.ingestEvents([customEvent]);
-      showNotification('Custom telemetry event ingested and processed by Monitoring & Detection agents!', 'success');
+      showNotification('Custom telemetry event ingested and processed by Monitoring & Detection agents.', 'success');
       triggerRefresh();
     } catch (err) {
       showNotification(`Failed to inject event: ${err.message}`, 'error');
@@ -78,25 +73,25 @@ export const LiveMonitoringPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#141E2E] border border-[#1E2B42] shadow-lg">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Live Threat Telemetry Monitor
+              Live Threat Telemetry
             </h1>
             <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 text-xs font-mono border border-sky-500/20">
-              AGENT 1: INGESTION & PARSING
+              TELEMETRY STREAM
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Raw incoming security logs normalized into standardized security event schemas with anomaly heuristics.
+            Raw incoming security logs normalized into standardized event schemas with behavioral anomaly detection.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => triggerRefresh()}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-[#101827] hover:bg-[#1E293B] border border-[#1E293B] transition"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-[#0D1422] hover:bg-[#192538] border border-[#1E2B42] transition"
             title="Refresh logs"
           >
             <RotateCw className="w-3.5 h-3.5" />
@@ -106,16 +101,16 @@ export const LiveMonitoringPage = () => {
           <button
             onClick={handleInjectSample}
             disabled={isInjecting}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-900 bg-sky-400 hover:bg-sky-300 transition shadow-md shadow-sky-500/20 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-950 bg-sky-400 hover:bg-sky-300 transition shadow-md shadow-sky-500/10 disabled:opacity-50"
           >
-            <PlusCircle className="w-4 h-4 fill-current text-slate-900" />
+            <PlusCircle className="w-4 h-4 fill-current text-slate-950" />
             <span>{isInjecting ? 'Ingesting...' : 'Inject Event'}</span>
           </button>
         </div>
       </div>
 
       {/* Search & Filters */}
-      <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 border border-[#1E293B] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="bg-[#141E2E] rounded-2xl p-4 border border-[#1E2B42] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 shadow-lg">
         {/* Search Input */}
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -124,7 +119,7 @@ export const LiveMonitoringPage = () => {
             placeholder="Search IP, user, command, file..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#101827] border border-[#1E293B] rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono"
+            className="w-full bg-[#0D1422] border border-[#1E2B42] focus:border-sky-500 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none font-mono transition"
           />
         </div>
 
@@ -133,7 +128,7 @@ export const LiveMonitoringPage = () => {
           <select
             value={severityFilter}
             onChange={(e) => setSeverityFilter(e.target.value)}
-            className="w-full bg-[#101827] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 font-mono"
+            className="w-full bg-[#0D1422] border border-[#1E2B42] focus:border-sky-500 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none font-mono transition"
           >
             <option value="ALL">All Severities</option>
             <option value="CRITICAL">CRITICAL</option>
@@ -149,7 +144,7 @@ export const LiveMonitoringPage = () => {
           <select
             value={eventTypeFilter}
             onChange={(e) => setEventTypeFilter(e.target.value)}
-            className="w-full bg-[#101827] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 font-mono"
+            className="w-full bg-[#0D1422] border border-[#1E2B42] focus:border-sky-500 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none font-mono transition"
           >
             <option value="ALL">All Event Types</option>
             <option value="AUTHENTICATION">AUTHENTICATION</option>
@@ -162,16 +157,16 @@ export const LiveMonitoringPage = () => {
         </div>
 
         {/* Total Count Pill */}
-        <div className="flex items-center justify-end px-2 text-xs font-mono text-slate-400">
-          Showing <span className="text-white font-bold mx-1">{events.length}</span> normalized events
+        <div className="flex items-center justify-between sm:justify-end px-2 text-xs font-mono text-slate-400">
+          <span>Total: <span className="text-white font-bold mx-1">{events.length}</span> records</span>
         </div>
       </div>
 
       {/* Events Table Container */}
-      <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl border border-[#1E293B] shadow-xl overflow-hidden">
-        <div className="sm:hidden px-4 py-2 bg-[#101827]/80 border-b border-[#1E293B] flex items-center justify-between text-[11px] text-slate-400 font-mono">
-          <span>Telemetry Table</span>
-          <span className="text-sky-400">← Swipe horizontally to view →</span>
+      <div className="bg-[#141E2E] rounded-2xl border border-[#1E2B42] shadow-lg overflow-hidden">
+        <div className="sm:hidden px-4 py-2 bg-[#0D1422] border-b border-[#1E2B42] flex items-center justify-between text-[11px] text-slate-400 font-mono">
+          <span>Telemetry Stream</span>
+          <span className="text-sky-400">← Swipe to view →</span>
         </div>
         {loading ? (
           <div className="p-12 text-center text-slate-400 text-xs font-mono">
@@ -187,7 +182,7 @@ export const LiveMonitoringPage = () => {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[850px] text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-[#1E293B] bg-[#101827]/70 text-slate-400 font-mono uppercase text-[11px]">
+                <tr className="border-b border-[#1E2B42] bg-[#0D1422] text-slate-400 font-mono uppercase text-[11px]">
                   <th className="py-3 px-4">Event ID</th>
                   <th className="py-3 px-4">Timestamp (UTC)</th>
                   <th className="py-3 px-4">Type / Action</th>
@@ -199,11 +194,11 @@ export const LiveMonitoringPage = () => {
                   <th className="py-3 px-4 text-right">Inspect</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1E293B]/60 font-mono">
+              <tbody className="divide-y divide-[#1E2B42] font-mono">
                 {events.map((evt) => (
                   <tr 
                     key={evt.id} 
-                    className="hover:bg-[#1A273D]/60 transition cursor-pointer"
+                    className="hover:bg-[#192538]/60 transition cursor-pointer"
                     onClick={() => openEvidenceViewer(evt.id)}
                   >
                     <td className="py-3 px-4 text-sky-400 font-semibold">{evt.id}</td>
@@ -222,9 +217,9 @@ export const LiveMonitoringPage = () => {
                     </td>
                     <td className="py-3 px-4">
                       {evt.is_suspicious ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] text-red-400 font-medium">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                          Suspicious
+                        <span className="inline-flex items-center gap-1.5 text-[11px] text-red-400 font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                          Flagged
                         </span>
                       ) : (
                         <span className="text-[11px] text-slate-500">Normal</span>
@@ -233,7 +228,7 @@ export const LiveMonitoringPage = () => {
                     <td className="py-3 px-4 text-right">
                       <button 
                         onClick={(e) => { e.stopPropagation(); openEvidenceViewer(evt.id); }}
-                        className="px-2.5 py-1 rounded bg-[#101827] text-sky-400 hover:text-sky-300 border border-[#1E293B] text-[11px]"
+                        className="px-2.5 py-1 rounded bg-[#0D1422] text-sky-400 hover:text-sky-300 border border-[#1E2B42] text-[11px] transition"
                       >
                         Inspect →
                       </button>

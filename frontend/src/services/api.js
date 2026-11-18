@@ -1,9 +1,58 @@
 const API_BASE = '/api';
 
+function getAuthHeaders() {
+  const token = localStorage.getItem('sentinel_auth_token') || sessionStorage.getItem('sentinel_auth_token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
 export const api = {
+  // Authentication
+  async login(email, password, rememberMe = false) {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, remember_me: rememberMe })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Authentication failed. Please check credentials.');
+    }
+    return res.json();
+  },
+
+  async verifySession(token) {
+    const authToken = token || localStorage.getItem('sentinel_auth_token') || sessionStorage.getItem('sentinel_auth_token');
+    const res = await fetch(`${API_BASE}/auth/verify`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    if (!res.ok) throw new Error('Session invalid or expired');
+    return res.json();
+  },
+
+  async logout() {
+    const token = localStorage.getItem('sentinel_auth_token') || sessionStorage.getItem('sentinel_auth_token');
+    try {
+      if (token) {
+        await fetch(`${API_BASE}/auth/logout`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+      }
+    } catch (e) {
+      // Ignore network errors on logout
+    } finally {
+      localStorage.removeItem('sentinel_auth_token');
+      localStorage.removeItem('sentinel_auth_user');
+      sessionStorage.removeItem('sentinel_auth_token');
+      sessionStorage.removeItem('sentinel_auth_user');
+    }
+  },
+
   // Dashboard
   async getDashboardStats() {
-    const res = await fetch(`${API_BASE}/dashboard/stats`);
+    const res = await fetch(`${API_BASE}/dashboard/stats`, {
+      headers: { ...getAuthHeaders() }
+    });
     if (!res.ok) throw new Error('Failed to load dashboard statistics');
     return res.json();
   },

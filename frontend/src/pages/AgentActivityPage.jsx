@@ -79,24 +79,24 @@ export const AgentActivityPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#141E2E] border border-[#1E2B42] shadow-xl">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Autonomous AI Agent Operations
+            <h1 className="text-xl sm:text-2xl font-black text-[#F8FAFC] tracking-tight">
+              Autonomous Agent Operations
             </h1>
-            <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 text-xs font-mono border border-sky-500/20">
-              6 SPECIALIZED AGENTS
+            <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 text-xs font-mono font-semibold border border-sky-500/20 tracking-wider">
+              PIPELINE ORCHESTRATION
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#94A3B8] mt-1">
             Real-time status, execution metrics, and audit trail of each agent in the triage pipeline.
           </p>
         </div>
 
         <button
           onClick={() => triggerRefresh()}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-[#101827] hover:bg-[#1E293B] border border-[#1E293B] transition self-start sm:self-auto"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-[#0D1422] hover:bg-[#192538] border border-[#1E2B42] transition self-start sm:self-auto"
         >
           <RotateCw className="w-3.5 h-3.5" />
           <span>Refresh Agents</span>
@@ -104,7 +104,7 @@ export const AgentActivityPage = () => {
       </div>
 
       {/* Visual Pipeline Flow Header */}
-      <div className="p-4 rounded-xl bg-[#101827] border border-[#1E293B] overflow-x-auto">
+      <div className="p-4 rounded-xl bg-[#0D1422] border border-[#1E2B42] overflow-x-auto">
         <div className="flex items-center justify-between min-w-[650px] text-xs font-mono font-bold text-slate-400">
           <span className="text-sky-400">1. MONITORING</span>
           <span>→</span>
@@ -120,7 +120,7 @@ export const AgentActivityPage = () => {
         </div>
       </div>
 
-      {/* Grid of 6 Specialized Agent Cards */}
+      {/* Grid of Agent Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {agents.map((agent) => {
           const meta = agentDetails[agent.name] || {
@@ -134,11 +134,11 @@ export const AgentActivityPage = () => {
           return (
             <div 
               key={agent.name}
-              className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] hover:border-sky-500/30 transition shadow-xl flex flex-col justify-between space-y-4"
+              className="bg-[#141E2E] rounded-2xl p-4 sm:p-5 border border-[#1E2B42] hover:border-sky-500/40 transition shadow-xl flex flex-col justify-between space-y-4"
             >
               <div>
                 {/* Agent Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#1E293B]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#1E2B42]">
                   <div className="flex items-center gap-2.5">
                     <div 
                       className="p-2 rounded-xl border text-white shrink-0"
@@ -147,7 +147,7 @@ export const AgentActivityPage = () => {
                       <Icon className="w-5 h-5" style={{ color: meta.color }} />
                     </div>
                     <div>
-                      <div className="text-[10px] font-mono text-slate-400">AGENT #{meta.order}</div>
+                      <div className="text-[10px] font-mono text-slate-400 font-semibold uppercase">STAGE {meta.order} OF 6</div>
                       <h3 className="text-sm font-bold text-white tracking-tight">{agent.name}</h3>
                     </div>
                   </div>
@@ -163,8 +163,8 @@ export const AgentActivityPage = () => {
                 </p>
 
                 {/* Current Task Box */}
-                <div className="mt-4 p-3 rounded-xl bg-[#101827] border border-[#1E293B] space-y-1">
-                  <div className="text-[10px] font-mono uppercase text-slate-500 font-semibold">
+                <div className="mt-4 p-3 rounded-xl bg-[#0D1422] border border-[#1E2B42] space-y-1">
+                  <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
                     Current Task:
                   </div>
                   <div className="text-xs font-mono text-slate-200 break-words">
@@ -174,9 +174,9 @@ export const AgentActivityPage = () => {
 
                 {/* Latest Output Box */}
                 {agent.latest_output && (
-                  <div className="mt-2 p-3 rounded-xl bg-[#080D18] border border-slate-800 space-y-1">
+                  <div className="mt-2 p-3 rounded-xl bg-[#080D18] border border-[#1E2B42] space-y-1">
                     <div className="text-[10px] font-mono uppercase text-sky-400 font-semibold flex items-center gap-1">
-                      <Terminal className="w-3 h-3" /> Latest Output Telemetry:
+                      <Terminal className="w-3 h-3" /> Output Telemetry:
                     </div>
                     <div className="text-[11px] font-mono text-slate-300 leading-relaxed break-words">
                       {agent.latest_output}
@@ -186,13 +186,13 @@ export const AgentActivityPage = () => {
               </div>
 
               {/* Footer Metrics */}
-              <div className="pt-3 border-t border-[#1E293B] flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-slate-400">
+              <div className="pt-3 border-t border-[#1E2B42] flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-slate-400">
                 <span className="flex items-center gap-1.5 text-slate-300 font-semibold">
                   <Layers className="w-3.5 h-3.5 text-sky-400" />
                   {agent.processed_count} Events Processed
                 </span>
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-slate-500" />
+                  <Clock className="w-3 h-3 text-slate-400" />
                   {agent.execution_duration_ms || 15}ms Latency
                 </span>
               </div>

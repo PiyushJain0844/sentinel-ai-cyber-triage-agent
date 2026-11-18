@@ -33,7 +33,7 @@ const CustomAttackNode = ({ data }) => {
   const Icon = categoryIcons[data.category] || Info;
 
   return (
-    <div className="relative group min-w-[170px] max-w-[210px] bg-[#101827] border-2 rounded-xl p-3 shadow-2xl transition-all duration-300 hover:scale-105"
+    <div className="relative group min-w-[170px] max-w-[210px] bg-[#0D1422] border-2 rounded-xl p-3 shadow-xl transition-all duration-200 hover:border-sky-400"
       style={{ borderColor: data.color || '#38BDF8' }}
     >
       <Handle type="target" position={Position.Left} className="!w-2 !h-2 !bg-sky-400 !border-0" />
@@ -108,17 +108,17 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
   }
 
   return (
-    <div className="relative w-full h-[360px] sm:h-[460px] lg:h-[520px] rounded-2xl overflow-hidden border border-[#1E293B] bg-[#0A1120] shadow-2xl">
-      {/* Overlay legend / USP badge */}
-      <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-10 flex items-center gap-1.5 sm:gap-2 bg-[#101827]/90 backdrop-blur-md px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-[#1E293B]">
-        <span className="w-2 h-2 rounded-full bg-red-400 animate-ping shrink-0" />
+    <div className="relative w-full h-[360px] sm:h-[460px] lg:h-[520px] rounded-2xl overflow-hidden border border-[#1E2B42] bg-[#080D18] shadow-xl">
+      {/* Overlay legend / Kill-chain badge */}
+      <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-10 flex items-center gap-1.5 sm:gap-2 bg-[#0D1422] px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-[#1E2B42]">
+        <span className="w-2 h-2 rounded-full bg-red-400 shrink-0" />
         <span className="text-[10px] sm:text-xs font-mono font-semibold text-slate-200">
-          USP 2: <span className="hidden xs:inline">Cross-Alert </span>Attack Kill-Chain
+          Correlated Attack Kill-Chain Graph
         </span>
       </div>
 
-      <div className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 z-10 hidden sm:flex items-center gap-1.5 bg-[#101827]/90 backdrop-blur-md px-2.5 py-1 rounded-md border border-[#1E293B] text-[11px] font-mono text-slate-400">
-        <Maximize2 className="w-3 h-3 text-sky-400" /> Pan & Zoom Enabled
+      <div className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 z-10 hidden sm:flex items-center gap-1.5 bg-[#0D1422] px-2.5 py-1 rounded-md border border-[#1E2B42] text-[11px] font-mono text-slate-400">
+        <Maximize2 className="w-3 h-3 text-sky-400" /> Interactive Pan & Zoom
       </div>
 
       <ReactFlow
@@ -142,8 +142,8 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
           else if (node.id === 'node-c2-exfil') openEvidenceViewer('EVT-2026-1007');
         }}
       >
-        <Background color="#1E293B" gap={20} size={1} />
-        <Controls className="!bg-[#101827] !border-[#1E293B]" />
+        <Background color="#1E2B42" gap={20} size={1} />
+        <Controls className="!bg-[#0D1422] !border-[#1E2B42]" />
       </ReactFlow>
     </div>
   );

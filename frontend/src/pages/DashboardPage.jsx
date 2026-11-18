@@ -3,19 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useSentinel } from '../context/SentinelContext';
 import { MetricCard } from '../components/MetricCard';
-import { SeverityBadge } from '../components/StatusBadge';
 import { AgentPipelineVisualizer } from '../components/AgentPipelineVisualizer';
+import { SeverityBadge } from '../components/StatusBadge';
 import { 
+  Activity, 
   ShieldAlert, 
   AlertTriangle, 
   CheckCircle, 
   Clock, 
-  Activity, 
   Filter, 
-  ArrowUpRight,
-  Flame,
+  ArrowUpRight, 
+  Play,
+  Database,
   Terminal,
-  Zap
+  ExternalLink
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -26,22 +27,20 @@ import {
   ResponsiveContainer, 
   PieChart, 
   Pie, 
-  Cell, 
-  BarChart, 
-  Bar 
+  Cell 
 } from 'recharts';
 
 const SEVERITY_COLORS = {
   CRITICAL: '#EF4444',
   HIGH: '#F59E0B',
-  MEDIUM: '#FBBF24',
-  LOW: '#38BDF8',
+  MEDIUM: '#38BDF8',
+  LOW: '#10B981',
   INFORMATIONAL: '#64748B'
 };
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
-  const { refreshTrigger, runSampleSimulation, openEvidenceViewer } = useSentinel();
+  const { refreshTrigger, openEvidenceViewer } = useSentinel();
   const [stats, setStats] = useState(null);
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,13 +49,13 @@ export const DashboardPage = () => {
     let isMounted = true;
     async function loadData() {
       try {
-        const [dashboardData, agentData] = await Promise.all([
+        const [statsData, agentsData] = await Promise.all([
           api.getDashboardStats(),
           api.getAgentsStatus()
         ]);
         if (isMounted) {
-          setStats(dashboardData);
-          setAgents(agentData);
+          setStats(statsData);
+          setAgents(agentsData);
           setLoading(false);
         }
       } catch (err) {
@@ -71,43 +70,47 @@ export const DashboardPage = () => {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-sky-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-mono text-slate-400">Loading Sentinel SOC Telemetry...</p>
+          <div className="w-8 h-8 border-3 border-sky-400 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs font-mono text-slate-400">Loading Security Operations Center Telemetry...</p>
         </div>
       </div>
     );
   }
 
+  const hasTelemetryData = stats.events_over_time && stats.events_over_time.length > 0;
+  const hasSeverityData = stats.severity_distribution && stats.severity_distribution.length > 0;
+
   return (
     <div className="space-y-6">
-      {/* Top Banner / Welcome */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-[#101827] via-[#151F30] to-[#101827] border border-[#1E293B]">
+      {/* Top SOC Overview Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#141E2E] border border-[#1E2B42] shadow-lg">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Security Operations Command Center
             </h1>
-            <span className="hidden sm:inline-block px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 text-xs font-mono border border-sky-500/20">
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-xs font-mono border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               ACTIVE DEFENSE
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Real-time multi-agent triage: from raw telemetry ingestion to verified threat containment.
+            Real-time autonomous threat triage: from raw telemetry ingestion to closed-loop containment.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/investigation')}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#1E293B] hover:bg-[#334155] border border-slate-700 transition"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#192538] hover:bg-[#24344D] border border-[#1E2B42] transition"
           >
-            <span>View Active Investigation</span>
+            <span>Active Investigation</span>
             <ArrowUpRight className="w-4 h-4 text-sky-400" />
           </button>
         </div>
       </div>
 
       {/* 6 Summary Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         <MetricCard
           title="Total Events"
           value={stats.total_events}
@@ -118,7 +121,7 @@ export const DashboardPage = () => {
         <MetricCard
           title="Active Incidents"
           value={stats.active_incidents}
-          subtext="Under multi-agent triage"
+          subtext="Under active triage"
           icon={ShieldAlert}
           variant={stats.active_incidents > 0 ? "danger" : "default"}
         />
@@ -139,26 +142,26 @@ export const DashboardPage = () => {
         <MetricCard
           title="Pending Approvals"
           value={stats.pending_approvals}
-          subtext="Human-in-the-loop gate"
+          subtext="Human authorization gate"
           icon={Clock}
           variant={stats.pending_approvals > 0 ? "warning" : "default"}
         />
         <MetricCard
           title="Baseline Events"
           value={stats.false_positives}
-          subtext="Benign background traffic"
+          subtext="Benign network traffic"
           icon={Filter}
           variant="default"
         />
       </div>
 
-      {/* 6-Agent Active Pipeline Visualizer */}
+      {/* Autonomous Security Agent Pipeline */}
       <AgentPipelineVisualizer agents={agents} />
 
       {/* Analytics Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Events Over Time (Area Chart) */}
-        <div className="lg:col-span-2 bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl flex flex-col justify-between min-w-0">
+        <div className="lg:col-span-2 bg-[#141E2E] rounded-2xl p-4 sm:p-5 border border-[#1E2B42] shadow-lg flex flex-col justify-between min-w-0">
           <div className="flex items-center justify-between mb-4 gap-2">
             <div>
               <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
@@ -172,27 +175,34 @@ export const DashboardPage = () => {
           </div>
 
           <div className="h-56 sm:h-64 w-full min-w-0">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={180}>
-              <AreaChart data={stats.events_over_time}>
-                <defs>
-                  <linearGradient id="eventGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#38BDF8" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#38BDF8" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="time" stroke="#64748B" fontSize={11} tickLine={false} />
-                <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#101827', borderColor: '#1E293B', borderRadius: '8px', color: '#F8FAFC', fontSize: '12px' }}
-                />
-                <Area type="monotone" dataKey="events" stroke="#38BDF8" strokeWidth={2} fillOpacity={1} fill="url(#eventGradient)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            {hasTelemetryData ? (
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={180}>
+                <AreaChart data={stats.events_over_time}>
+                  <defs>
+                    <linearGradient id="eventGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#38BDF8" stopOpacity={0.6}/>
+                      <stop offset="95%" stopColor="#38BDF8" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="time" stroke="#64748B" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#64748B" fontSize={11} tickLine={false} axisLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0D1422', borderColor: '#1E2B42', borderRadius: '8px', color: '#F8FAFC', fontSize: '12px' }}
+                  />
+                  <Area type="monotone" dataKey="events" stroke="#38BDF8" strokeWidth={2} fillOpacity={1} fill="url(#eventGradient)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-xs text-slate-500 font-mono">
+                <span>No telemetry timeline data recorded.</span>
+                <span className="text-[11px] text-slate-600 mt-1">Click "Simulate Attack" to inject telemetry.</span>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Severity Distribution (Pie Chart) */}
-        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl flex flex-col justify-between min-w-0">
+        <div className="bg-[#141E2E] rounded-2xl p-4 sm:p-5 border border-[#1E2B42] shadow-lg flex flex-col justify-between min-w-0">
           <div className="flex items-center justify-between mb-2">
             <div>
               <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
@@ -203,44 +213,52 @@ export const DashboardPage = () => {
           </div>
 
           <div className="h-48 sm:h-52 w-full min-w-0 flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={160}>
-              <PieChart>
-                <Pie
-                  data={stats.severity_distribution}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={45}
-                  outerRadius={70}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {stats.severity_distribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={SEVERITY_COLORS[entry.name] || '#38BDF8'} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#101827', borderColor: '#1E293B', borderRadius: '8px', color: '#F8FAFC', fontSize: '12px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            {hasSeverityData ? (
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={160}>
+                <PieChart>
+                  <Pie
+                    data={stats.severity_distribution}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={45}
+                    outerRadius={70}
+                    paddingAngle={4}
+                    dataKey="value"
+                  >
+                    {stats.severity_distribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={SEVERITY_COLORS[entry.name] || '#38BDF8'} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0D1422', borderColor: '#1E2B42', borderRadius: '8px', color: '#F8FAFC', fontSize: '12px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-xs text-slate-500 font-mono">
+                No threat events classified.
+              </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#1E293B]">
-            {stats.severity_distribution.map((entry) => (
-              <div key={entry.name} className="flex items-center justify-between text-xs">
-                <span className="flex items-center gap-1.5 text-slate-400 text-[11px] sm:text-xs">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: SEVERITY_COLORS[entry.name] || '#64748B' }} />
-                  {entry.name}
-                </span>
-                <span className="font-mono font-semibold text-slate-200">{entry.value}</span>
-              </div>
-            ))}
-          </div>
+          {hasSeverityData && (
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#1E2B42]">
+              {stats.severity_distribution.map((entry) => (
+                <div key={entry.name} className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-1.5 text-slate-400 text-[11px] sm:text-xs">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: SEVERITY_COLORS[entry.name] || '#64748B' }} />
+                    {entry.name}
+                  </span>
+                  <span className="font-mono font-semibold text-slate-200">{entry.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Recent Activity Live-Style Feed */}
-      <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl">
+      <div className="bg-[#141E2E] rounded-2xl p-4 sm:p-5 border border-[#1E2B42] shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <div>
             <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
@@ -259,37 +277,45 @@ export const DashboardPage = () => {
         <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
           <table className="w-full text-left text-xs border-collapse min-w-[620px]">
             <thead>
-              <tr className="border-b border-[#1E293B] text-slate-400 font-mono uppercase text-[11px]">
+              <tr className="border-b border-[#1E2B42] bg-[#0D1422] text-slate-400 font-mono uppercase text-[11px]">
                 <th className="py-2.5 px-3">Event ID</th>
-                <th className="py-2.5 px-3">Timestamp (UTC)</th>
+                <th className="py-2.5 px-3">Time (UTC)</th>
                 <th className="py-2.5 px-3">Type</th>
-                <th className="py-2.5 px-3">Action</th>
+                <th className="py-2.5 px-3">Source IP</th>
+                <th className="py-2.5 px-3">Target User</th>
                 <th className="py-2.5 px-3">Severity</th>
-                <th className="py-2.5 px-3">Origin IP</th>
-                <th className="py-2.5 px-3">Principal</th>
+                <th className="py-2.5 px-3">Status</th>
                 <th className="py-2.5 px-3 text-right">Inspect</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1E293B]/60 font-mono">
-              {stats.recent_activity.map((evt) => (
+            <tbody className="divide-y divide-[#1E2B42] font-mono">
+              {stats.recent_activity.map((item) => (
                 <tr 
-                  key={evt.id} 
-                  className="hover:bg-[#1A273D]/50 transition cursor-pointer"
-                  onClick={() => openEvidenceViewer(evt.id)}
+                  key={item.id} 
+                  className="hover:bg-[#192538]/60 transition cursor-pointer"
+                  onClick={() => openEvidenceViewer(item.id)}
                 >
-                  <td className="py-3 px-3 text-sky-400 font-semibold">{evt.id}</td>
-                  <td className="py-3 px-3 text-slate-400">{evt.timestamp?.substring(11, 19)}</td>
-                  <td className="py-3 px-3 text-slate-300">{evt.event_type}</td>
-                  <td className="py-3 px-3 text-slate-200">{evt.action}</td>
-                  <td className="py-3 px-3"><SeverityBadge severity={evt.severity} /></td>
-                  <td className="py-3 px-3 text-slate-300">{evt.source_ip}</td>
-                  <td className="py-3 px-3 text-amber-300">{evt.username}</td>
-                  <td className="py-3 px-3 text-right">
+                  <td className="py-2.5 px-3 text-sky-400 font-semibold">{item.id}</td>
+                  <td className="py-2.5 px-3 text-slate-400">{item.timestamp?.substring(11, 19)}</td>
+                  <td className="py-2.5 px-3 text-slate-200">{item.event_type}</td>
+                  <td className="py-2.5 px-3 text-slate-300">{item.source_ip}</td>
+                  <td className="py-2.5 px-3 text-amber-300">{item.username}</td>
+                  <td className="py-2.5 px-3">
+                    <SeverityBadge severity={item.severity} />
+                  </td>
+                  <td className="py-2.5 px-3">
+                    {item.status === 'Suspicious' ? (
+                      <span className="text-[11px] text-red-400 font-semibold">Flagged</span>
+                    ) : (
+                      <span className="text-[11px] text-slate-500">Normal</span>
+                    )}
+                  </td>
+                  <td className="py-2.5 px-3 text-right">
                     <button 
-                      onClick={(e) => { e.stopPropagation(); openEvidenceViewer(evt.id); }}
-                      className="text-[11px] text-sky-400 hover:underline px-2 py-0.5 rounded bg-[#101827] border border-[#1E293B]"
+                      onClick={(e) => { e.stopPropagation(); openEvidenceViewer(item.id); }}
+                      className="text-sky-400 hover:text-sky-300 text-[11px] font-semibold"
                     >
-                      Evidence →
+                      View →
                     </button>
                   </td>
                 </tr>

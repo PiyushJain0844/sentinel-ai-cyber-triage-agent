@@ -8,6 +8,7 @@ from backend.config import settings
 from backend.database.db import init_db, get_db
 from backend.services.orchestrator import orchestrator
 from backend.routes import (
+    auth,
     dashboard,
     events,
     incidents,
@@ -53,6 +54,7 @@ app.add_middleware(
 )
 
 # Include all modular routers
+app.include_router(auth.router)
 app.include_router(dashboard.router)
 app.include_router(events.router)
 app.include_router(incidents.router)

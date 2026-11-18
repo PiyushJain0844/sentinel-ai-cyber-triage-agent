@@ -43,40 +43,17 @@ def get_dashboard_stats():
             LIMIT 12
         """)
         time_rows = cursor.fetchall()
-        events_over_time = [{"time": r["time_bucket"] or "10:00", "events": r["count"]} for r in time_rows]
-        if not events_over_time:
-            events_over_time = [
-                {"time": "10:00", "events": 1},
-                {"time": "10:02", "events": 15},
-                {"time": "10:05", "events": 2},
-                {"time": "10:08", "events": 3},
-                {"time": "10:10", "events": 2},
-                {"time": "10:12", "events": 5}
-            ]
+        events_over_time = [{"time": r["time_bucket"] or "UTC", "events": r["count"]} for r in time_rows]
 
         # Severity distribution
         cursor.execute("SELECT severity, COUNT(*) as count FROM security_events GROUP BY severity")
         sev_rows = cursor.fetchall()
         severity_distribution = [{"name": r["severity"], "value": r["count"]} for r in sev_rows]
-        if not severity_distribution:
-            severity_distribution = [
-                {"name": "CRITICAL", "value": 3},
-                {"name": "HIGH", "value": 3},
-                {"name": "MEDIUM", "value": 0},
-                {"name": "INFORMATIONAL", "value": 2}
-            ]
 
         # Incident Categories
         cursor.execute("SELECT category as name, COUNT(*) as value FROM security_alerts GROUP BY category")
         cat_rows = cursor.fetchall()
         incident_categories = [{"name": r["name"], "value": r["value"]} for r in cat_rows]
-        if not incident_categories:
-            incident_categories = [
-                {"name": "Credential Access", "value": 2},
-                {"name": "Initial Access", "value": 2},
-                {"name": "Execution", "value": 1},
-                {"name": "Exfiltration", "value": 1}
-            ]
 
         # Recent activity feed
         cursor.execute("""

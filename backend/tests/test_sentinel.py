@@ -15,7 +15,7 @@ from backend.agents import (
     verification_agent,
     ALL_AGENTS
 )
-from backend.routes import dashboard, events, incidents, investigation, responses, verification, simulation, settings as settings_route
+from backend.routes import auth, dashboard, events, incidents, investigation, responses, verification, simulation, settings as settings_route
 from backend.schemas.schemas import ActionApprovalRequest, VerificationRequest, SecurityEventCreate
 
 @pytest.fixture(autouse=True)
@@ -240,3 +240,33 @@ def test_events_filtering_and_ingestion():
     )
     res = events.ingest_events(new_evt)
     assert res["status"] == "success"
+
+def test_authentication_flow():
+    # 1. Valid login with demo analyst
+    login_req = auth.LoginRequest(
+        email="analyst@sentinel.cyber",
+        password="Sentinel@2026!",
+        remember_me=True
+    )
+    login_res = auth.login(login_req)
+    assert login_res.token.startswith("stnl_")
+    assert login_res.user.email == "analyst@sentinel.cyber"
+    assert login_res.user.role == "Senior SOC Lead Analyst"
+
+    # 2. Verify active session token
+    auth_header = f"Bearer {login_res.token}"
+    verify_res = auth.verify_session(authorization=auth_header)
+    assert verify_res["status"] == "valid"
+    assert verify_res["user"]["name"] == "Sarah Connor"
+
+    # 3. Invalid credentials test
+    bad_req = auth.LoginRequest(
+        email="analyst@sentinel.cyber",
+        password="WrongPassword123"
+    )
+    with pytest.raises(Exception):
+        auth.login(bad_req)
+
+    # 4. Logout test
+    logout_res = auth.logout(authorization=auth_header)
+    assert logout_res["status"] == "logged_out"

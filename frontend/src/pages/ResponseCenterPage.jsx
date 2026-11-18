@@ -84,24 +84,24 @@ export const ResponseCenterPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#141E2E] border border-[#1E2B42] shadow-xl">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-[#F8FAFC] tracking-tight">
               Remediation & Response Center
             </h1>
-            <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-xs font-mono border border-blue-500/20">
-              AGENT 5: HUMAN-IN-THE-LOOP RESPONSE
+            <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 text-xs font-mono font-semibold border border-sky-500/20 tracking-wider">
+              REMEDIATION QUEUE
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#94A3B8] mt-1">
             Zero unauthorized destructive commands: sensitive remediation actions require explicit human analyst authorization.
           </p>
         </div>
 
         <button
           onClick={() => triggerRefresh()}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-[#101827] hover:bg-[#1E293B] border border-[#1E293B] transition self-start sm:self-auto"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-[#0D1422] hover:bg-[#192538] border border-[#1E2B42] transition self-start sm:self-auto"
         >
           <RotateCw className="w-3.5 h-3.5" />
           <span>Refresh Queue</span>
@@ -115,7 +115,7 @@ export const ResponseCenterPage = () => {
             Loading remediation actions...
           </div>
         ) : responses.length === 0 ? (
-          <div className="p-12 text-center text-slate-400 bg-[#151F30]/60 rounded-2xl border border-[#1E293B]">
+          <div className="p-12 text-center text-slate-400 bg-[#141E2E] rounded-2xl border border-[#1E2B42]">
             <ShieldCheck className="w-8 h-8 text-slate-500 mx-auto mb-2" />
             <p className="text-sm font-medium text-slate-300">No active response recommendations queued</p>
             <p className="text-xs text-slate-500 mt-1">Trigger attack simulation from the navbar to formulate response actions.</p>
@@ -133,10 +133,10 @@ export const ResponseCenterPage = () => {
             return (
               <div 
                 key={action.id}
-                className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl space-y-4"
+                className="bg-[#141E2E] rounded-2xl p-5 border border-[#1E2B42] shadow-xl space-y-4"
               >
                 {/* Header Row */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E293B]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E2B42]">
                   <div className="flex items-start sm:items-center gap-3">
                     <div className={`p-2 rounded-xl border shrink-0 mt-0.5 sm:mt-0 ${
                       isVerified ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
@@ -203,7 +203,7 @@ export const ResponseCenterPage = () => {
 
                 {/* Rationale & Operational Impact Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-3.5 rounded-xl bg-[#101827] border border-[#1E293B] space-y-1">
+                  <div className="p-3.5 rounded-xl bg-[#0D1422] border border-[#1E2B42] space-y-1">
                     <span className="text-[10px] font-mono uppercase text-sky-400 font-semibold">
                       Reason & Rationale:
                     </span>
@@ -212,7 +212,7 @@ export const ResponseCenterPage = () => {
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-[#101827] border border-[#1E293B] space-y-1">
+                  <div className="p-3.5 rounded-xl bg-[#0D1422] border border-[#1E2B42] space-y-1">
                     <span className="text-[10px] font-mono uppercase text-amber-400 font-semibold">
                       Expected Operational Impact:
                     </span>
@@ -225,12 +225,12 @@ export const ResponseCenterPage = () => {
                 {/* Evidence Citing Row */}
                 {action.supporting_evidence?.length > 0 && (
                   <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-mono text-slate-400">
-                    <span className="text-[10px] text-slate-500 uppercase font-semibold">Supporting Evidence:</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold">Supporting Evidence:</span>
                     {action.supporting_evidence.map((eid) => (
                       <button
                         key={eid}
                         onClick={() => openEvidenceViewer(eid)}
-                        className="px-2 py-0.5 rounded bg-[#101827] hover:bg-sky-500/20 text-sky-400 border border-[#1E293B] text-[11px] transition flex items-center gap-1"
+                        className="px-2 py-0.5 rounded bg-[#0D1422] hover:bg-sky-500/20 text-sky-400 border border-[#1E2B42] text-[11px] transition flex items-center gap-1"
                       >
                         <Database className="w-3 h-3" />
                         <span>{eid}</span>
@@ -255,7 +255,7 @@ export const ResponseCenterPage = () => {
                 )}
 
                 {/* Human Approval / Execution Action Buttons */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[#1E293B]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[#1E2B42]">
                   <div className="text-xs text-slate-400 font-mono">
                     Incident: <span className="text-white font-semibold">{action.incident_id}</span>
                     {action.approval_decision_by && (
@@ -304,7 +304,7 @@ export const ResponseCenterPage = () => {
                         onClick={() => navigate('/verification')}
                         className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-white bg-sky-600 hover:bg-sky-500 transition shadow-md shadow-sky-600/20"
                       >
-                        <span>Verify Resolution in Agent 6</span>
+                        <span>Verify Resolution</span>
                         <ArrowRight className="w-3.5 h-3.5 text-white" />
                       </button>
                     )}
