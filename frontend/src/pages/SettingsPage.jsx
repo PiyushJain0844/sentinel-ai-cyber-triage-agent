@@ -49,8 +49,8 @@ export const SettingsPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
-        <div className="flex items-center gap-2">
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+        <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             System & Engine Configuration
           </h1>
@@ -63,12 +63,12 @@ export const SettingsPage = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Card 1: AI Integration Status */}
-        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#1E293B]">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shrink-0">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
@@ -79,30 +79,32 @@ export const SettingsPage = () => {
               </div>
             </div>
 
-            <span className={`px-2.5 py-1 rounded-full text-xs font-mono font-bold border ${
-              ai.is_configured 
-                ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' 
-                : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-            }`}>
-              {ai.is_configured ? 'GEMINI LIVE' : 'DETERMINISTIC FALLBACK'}
-            </span>
+            <div className="self-start sm:self-auto">
+              <span className={`px-2.5 py-1 rounded-full text-xs font-mono font-bold border ${
+                ai.is_configured 
+                  ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' 
+                  : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+              }`}>
+                {ai.is_configured ? 'GEMINI LIVE' : 'DETERMINISTIC FALLBACK'}
+              </span>
+            </div>
           </div>
 
           <div className="space-y-3 font-mono text-xs">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
               <span className="text-slate-400">Operational Mode:</span>
               <span className="text-white font-bold">{ai.mode}</span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
               <span className="text-slate-400">Target Model:</span>
               <span className="text-sky-400 font-bold">{ai.model}</span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
               <span className="text-slate-400">API Key Configuration:</span>
-              <span className="text-slate-300 flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-slate-400" />
+              <span className="text-slate-300 flex items-center gap-1.5 break-all">
+                <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 {ai.is_configured ? 'Active (Secured in Backend ENV)' : 'Unset (Zero-Failure Fallback Engaged)'}
               </span>
             </div>
@@ -115,10 +117,10 @@ export const SettingsPage = () => {
         </div>
 
         {/* Card 2: Database Status */}
-        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#1E293B]">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 shrink-0">
                 <Database className="w-5 h-5" />
               </div>
               <div>
@@ -129,43 +131,45 @@ export const SettingsPage = () => {
               </div>
             </div>
 
-            <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-              OPERATIONAL
-            </span>
+            <div className="self-start sm:self-auto">
+              <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                OPERATIONAL
+              </span>
+            </div>
           </div>
 
           <div className="space-y-3 font-mono text-xs">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
               <span className="text-slate-400">Database Engine:</span>
               <span className="text-white font-bold">{db.engine}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
-                <div className="text-slate-400">Events Stored:</div>
-                <div className="text-lg font-bold text-sky-400 mt-1">{db.records?.events ?? 0}</div>
+                <div className="text-slate-400 text-[11px] truncate">Events Stored:</div>
+                <div className="text-base sm:text-lg font-bold text-sky-400 mt-1">{db.records?.events ?? 0}</div>
               </div>
               <div className="p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
-                <div className="text-slate-400">Alerts Detected:</div>
-                <div className="text-lg font-bold text-amber-400 mt-1">{db.records?.alerts ?? 0}</div>
+                <div className="text-slate-400 text-[11px] truncate">Alerts Detected:</div>
+                <div className="text-base sm:text-lg font-bold text-amber-400 mt-1">{db.records?.alerts ?? 0}</div>
               </div>
               <div className="p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
-                <div className="text-slate-400">Incidents Correlated:</div>
-                <div className="text-lg font-bold text-purple-400 mt-1">{db.records?.incidents ?? 0}</div>
+                <div className="text-slate-400 text-[11px] truncate">Incidents Correlated:</div>
+                <div className="text-base sm:text-lg font-bold text-purple-400 mt-1">{db.records?.incidents ?? 0}</div>
               </div>
               <div className="p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
-                <div className="text-slate-400">Responses Formulated:</div>
-                <div className="text-lg font-bold text-emerald-400 mt-1">{db.records?.responses ?? 0}</div>
+                <div className="text-slate-400 text-[11px] truncate">Responses Formulated:</div>
+                <div className="text-base sm:text-lg font-bold text-emerald-400 mt-1">{db.records?.responses ?? 0}</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Card 3: Threat Intelligence Integrations */}
-        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#1E293B]">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
                 <Globe className="w-5 h-5" />
               </div>
               <div>
@@ -178,17 +182,17 @@ export const SettingsPage = () => {
           </div>
 
           <div className="space-y-3 font-mono text-xs">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
               <span className="text-slate-400">VirusTotal API:</span>
               <span className="text-slate-200">{intel.virustotal}</span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
               <span className="text-slate-400">AbuseIPDB API:</span>
               <span className="text-slate-200">{intel.abuseipdb}</span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3 rounded-xl bg-[#101827] border border-[#1E293B]">
               <span className="text-slate-400">Wazuh SIEM Connector:</span>
               <span className="text-slate-200">Synthetic Endpoint Feeds</span>
             </div>
@@ -196,10 +200,10 @@ export const SettingsPage = () => {
         </div>
 
         {/* Card 4: About SENTINEL AI */}
-        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#1E293B]">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 shrink-0">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>

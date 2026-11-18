@@ -78,9 +78,9 @@ export const LiveMonitoringPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Live Threat Telemetry Monitor
             </h1>
@@ -93,14 +93,14 @@ export const LiveMonitoringPage = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => triggerRefresh()}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-[#101827] hover:bg-[#1E293B] border border-[#1E293B] transition"
             title="Refresh logs"
           >
             <RotateCw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Refresh</span>
+            <span className="inline">Refresh</span>
           </button>
 
           <button
@@ -169,6 +169,10 @@ export const LiveMonitoringPage = () => {
 
       {/* Events Table Container */}
       <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl border border-[#1E293B] shadow-xl overflow-hidden">
+        <div className="sm:hidden px-4 py-2 bg-[#101827]/80 border-b border-[#1E293B] flex items-center justify-between text-[11px] text-slate-400 font-mono">
+          <span>Telemetry Table</span>
+          <span className="text-sky-400">← Swipe horizontally to view →</span>
+        </div>
         {loading ? (
           <div className="p-12 text-center text-slate-400 text-xs font-mono">
             Loading telemetry feed...
@@ -181,7 +185,7 @@ export const LiveMonitoringPage = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
+            <table className="w-full min-w-[850px] text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-[#1E293B] bg-[#101827]/70 text-slate-400 font-mono uppercase text-[11px]">
                   <th className="py-3 px-4">Event ID</th>

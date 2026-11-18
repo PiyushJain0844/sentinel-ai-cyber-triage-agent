@@ -68,9 +68,9 @@ export const VerificationCenterPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Closed-Loop Security Verification
             </h1>
@@ -94,8 +94,8 @@ export const VerificationCenterPage = () => {
 
       {/* Executed Actions Ready For Verification */}
       {executedActions.length > 0 ? (
-        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-sky-500/30 shadow-xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-sky-500/30 shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1E293B]">
             <div className="flex items-center gap-2">
               <Activity className="w-5 h-5 text-sky-400 animate-pulse" />
               <h3 className="text-sm font-bold text-white uppercase tracking-wider">
@@ -120,16 +120,16 @@ export const VerificationCenterPage = () => {
                       {action.incident_id}
                     </span>
                   </div>
-                  <h4 className="text-sm font-bold text-white mt-1">{action.title}</h4>
-                  <p className="text-xs text-slate-400 mt-1">{action.expected_impact}</p>
+                  <h4 className="text-sm font-bold text-white mt-1 break-words">{action.title}</h4>
+                  <p className="text-xs text-slate-400 mt-1 break-words">{action.expected_impact}</p>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-800">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 border-t border-slate-800">
                   {/* Simulate Failure Button for Hackathon Demo */}
                   <button
                     onClick={() => handleRunVerification(action.id, true)}
                     disabled={verifyingId === action.id}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium text-rose-300 hover:text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition disabled:opacity-50 flex items-center gap-1.5"
+                    className="w-full sm:w-auto px-3 py-2 sm:py-1.5 rounded-lg text-xs font-medium text-rose-300 hover:text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition disabled:opacity-50 flex items-center justify-center gap-1.5"
                     title="Simulates failed session invalidation, reopening the incident for investigation"
                   >
                     <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
@@ -140,7 +140,7 @@ export const VerificationCenterPage = () => {
                   <button
                     onClick={() => handleRunVerification(action.id, false)}
                     disabled={verifyingId === action.id}
-                    className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition shadow-md shadow-emerald-500/20 disabled:opacity-50 flex items-center gap-1.5"
+                    className="w-full sm:w-auto px-3.5 py-2 sm:py-1.5 rounded-lg text-xs font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition shadow-md shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-1.5"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Verify Containment</span>
@@ -151,15 +151,15 @@ export const VerificationCenterPage = () => {
           </div>
         </div>
       ) : (
-        <div className="p-4 rounded-xl bg-[#151F30]/60 border border-[#1E293B] flex items-center justify-between text-xs text-slate-400">
+        <div className="p-4 rounded-xl bg-[#151F30]/60 border border-[#1E293B] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400">
           <span>All executed remediation actions currently have active verification checks recorded.</span>
           <span className="font-mono text-emerald-400">ACTIVE CLOSED-LOOP MONITORING</span>
         </div>
       )}
 
       {/* Verification Audit Records Log */}
-      <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+      <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1E293B]">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">
@@ -195,31 +195,31 @@ export const VerificationCenterPage = () => {
                       : 'bg-[#101827] border-red-500/40 glow-red'
                   }`}
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-xl border ${
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                    <div className="flex items-start sm:items-center gap-3">
+                      <div className={`p-2 rounded-xl border shrink-0 mt-0.5 sm:mt-0 ${
                         isContained ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-red-500/10 text-red-400 border-red-500/30'
                       }`}>
                         {isContained ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5 animate-pulse" />}
                       </div>
                       <div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className="font-mono font-bold text-xs text-sky-400">{record.id}</span>
                           <span className="text-xs font-mono text-slate-400">Action: {record.response_action_id}</span>
                         </div>
-                        <h4 className="text-sm font-bold text-white mt-0.5">
+                        <h4 className="text-sm font-bold text-white mt-0.5 break-words">
                           {isContained ? 'Threat Successfully Contained & Verified' : 'Verification Failed: Unresolved Adversary Channel Detected'}
                         </h4>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
                       <IncidentStatusBadge status={record.incident_status} />
-                      <div className="flex items-center gap-1.5 ml-2">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleRunVerification(record.response_action_id, true)}
                           disabled={verifyingId === record.response_action_id}
-                          className="px-2 py-0.5 rounded bg-[#151F30] hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-[10px] font-mono transition flex items-center gap-1"
+                          className="px-2 py-1 sm:py-0.5 rounded bg-[#151F30] hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-[10px] font-mono transition flex items-center gap-1"
                           title="Test incident reopening by probing for persistent threat activity"
                         >
                           <AlertTriangle className="w-2.5 h-2.5" />
@@ -228,7 +228,7 @@ export const VerificationCenterPage = () => {
                         <button
                           onClick={() => handleRunVerification(record.response_action_id, false)}
                           disabled={verifyingId === record.response_action_id}
-                          className="px-2 py-0.5 rounded bg-[#151F30] hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 text-[10px] font-mono transition flex items-center gap-1"
+                          className="px-2 py-1 sm:py-0.5 rounded bg-[#151F30] hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 text-[10px] font-mono transition flex items-center gap-1"
                           title="Re-verify containment across all 4 checks"
                         >
                           <CheckCircle2 className="w-2.5 h-2.5" />

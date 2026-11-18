@@ -16,27 +16,27 @@ export const MetricCard = ({ title, value, subtext, icon: Icon, badge, variant =
   };
 
   return (
-    <div className={`bg-[#151F30]/90 backdrop-blur-md rounded-xl p-5 border border-[#1E293B] transition-all duration-300 shadow-lg ${borderStyles[variant] || borderStyles.default}`}>
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</span>
+    <div className={`bg-[#151F30]/90 backdrop-blur-md rounded-xl p-3.5 sm:p-5 border border-[#1E293B] transition-all duration-300 shadow-lg ${borderStyles[variant] || borderStyles.default}`}>
+      <div className="flex items-center justify-between gap-1">
+        <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 line-clamp-1">{title}</span>
         {Icon && (
-          <div className={`p-2.5 rounded-lg ${iconBgStyles[variant] || iconBgStyles.default}`}>
-            <Icon className="w-5 h-5" />
+          <div className={`p-1.5 sm:p-2.5 rounded-lg shrink-0 ${iconBgStyles[variant] || iconBgStyles.default}`}>
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         )}
       </div>
 
-      <div className="mt-3 flex items-baseline gap-2">
-        <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-mono">{value}</span>
+      <div className="mt-2 sm:mt-3 flex items-baseline gap-1.5 sm:gap-2">
+        <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight font-mono">{value}</span>
         {badge && (
-          <span className="text-xs font-medium px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+          <span className="text-[10px] sm:text-xs font-medium px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
             {badge}
           </span>
         )}
       </div>
 
       {subtext && (
-        <p className="mt-1 text-xs text-slate-400 flex items-center gap-1">
+        <p className="mt-1 text-[10px] sm:text-xs text-slate-400 truncate">
           {subtext}
         </p>
       )}

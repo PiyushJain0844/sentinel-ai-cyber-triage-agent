@@ -21,11 +21,11 @@ export default function App() {
   return (
     <SentinelProvider>
       <BrowserRouter>
-        <div className="min-h-screen bg-[#080D18] text-[#F8FAFC] flex flex-col font-sans selection:bg-sky-500 selection:text-slate-900">
+        <div className="min-h-screen bg-[#080D18] text-[#F8FAFC] flex flex-col font-sans selection:bg-sky-500 selection:text-slate-900 overflow-x-hidden">
           {/* Top Navbar */}
           <Navbar 
             onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-            isMobileMenuOpen={isMobileMenuOpen}
+            isMobileMenuOpen={isMobileMenuOpen} 
           />
 
           <div className="flex-1 flex overflow-hidden">
@@ -36,7 +36,7 @@ export default function App() {
             />
 
             {/* Main Content Area */}
-            <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+            <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
               <Routes>
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/monitoring" element={<LiveMonitoringPage />} />

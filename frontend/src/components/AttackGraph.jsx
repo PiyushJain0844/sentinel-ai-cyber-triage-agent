@@ -108,16 +108,16 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
   }
 
   return (
-    <div className="relative w-full h-[460px] sm:h-[520px] rounded-2xl overflow-hidden border border-[#1E293B] bg-[#0A1120] shadow-2xl">
+    <div className="relative w-full h-[360px] sm:h-[460px] lg:h-[520px] rounded-2xl overflow-hidden border border-[#1E293B] bg-[#0A1120] shadow-2xl">
       {/* Overlay legend / USP badge */}
-      <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2 bg-[#101827]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#1E293B]">
-        <span className="w-2 h-2 rounded-full bg-red-400 animate-ping" />
-        <span className="text-xs font-mono font-semibold text-slate-200">
-          USP 2: Cross-Alert Attack Reconstruction Kill-Chain
+      <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-10 flex items-center gap-1.5 sm:gap-2 bg-[#101827]/90 backdrop-blur-md px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-[#1E293B]">
+        <span className="w-2 h-2 rounded-full bg-red-400 animate-ping shrink-0" />
+        <span className="text-[10px] sm:text-xs font-mono font-semibold text-slate-200">
+          USP 2: <span className="hidden xs:inline">Cross-Alert </span>Attack Kill-Chain
         </span>
       </div>
 
-      <div className="absolute top-3 right-3 z-10 hidden sm:flex items-center gap-1.5 bg-[#101827]/90 backdrop-blur-md px-2.5 py-1 rounded-md border border-[#1E293B] text-[11px] font-mono text-slate-400">
+      <div className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 z-10 hidden sm:flex items-center gap-1.5 bg-[#101827]/90 backdrop-blur-md px-2.5 py-1 rounded-md border border-[#1E293B] text-[11px] font-mono text-slate-400">
         <Maximize2 className="w-3 h-3 text-sky-400" /> Pan & Zoom Enabled
       </div>
 

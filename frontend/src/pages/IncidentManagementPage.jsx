@@ -51,9 +51,9 @@ export const IncidentManagementPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Incident Management
             </h1>
@@ -72,12 +72,12 @@ export const IncidentManagementPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 border border-[#1E293B] flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 border border-[#1E293B] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
           <select
             value={filterSeverity}
             onChange={(e) => setFilterSeverity(e.target.value)}
-            className="bg-[#101827] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 font-mono"
+            className="w-full sm:w-auto bg-[#101827] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 font-mono"
           >
             <option value="ALL">All Severities</option>
             <option value="CRITICAL">CRITICAL</option>
@@ -89,7 +89,7 @@ export const IncidentManagementPage = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="bg-[#101827] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 font-mono"
+            className="w-full sm:w-auto bg-[#101827] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 font-mono"
           >
             <option value="ALL">All Statuses</option>
             <option value="THREAT_DETECTED">Threat Detected</option>
@@ -125,53 +125,53 @@ export const IncidentManagementPage = () => {
               onClick={() => navigate(`/investigation?id=${inc.id}`)}
               className="group bg-[#151F30]/90 hover:bg-[#1A273D]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] hover:border-sky-500/40 transition-all cursor-pointer shadow-lg space-y-4"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1E293B]">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E293B]">
+                <div className="flex items-start sm:items-center gap-3">
+                  <div className="p-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 shrink-0 mt-0.5 sm:mt-0">
                     <ShieldAlert className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono font-bold text-xs text-sky-400">{inc.id}</span>
                       <SeverityBadge severity={inc.severity} />
                     </div>
-                    <h3 className="text-base font-bold text-white tracking-tight mt-0.5">
+                    <h3 className="text-sm sm:text-base font-bold text-white tracking-tight mt-0.5 break-words">
                       {inc.title}
                     </h3>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
                   <IncidentStatusBadge status={inc.status} />
-                  <div className="hidden sm:flex flex-col items-end">
-                    <span className="text-[10px] text-slate-400 uppercase font-mono">Risk Score</span>
-                    <span className="text-base font-black font-mono text-red-400">{inc.risk_score}/100</span>
+                  <div className="flex sm:flex-col items-center sm:items-end gap-1.5 sm:gap-0">
+                    <span className="text-[10px] text-slate-400 uppercase font-mono">Risk:</span>
+                    <span className="text-sm sm:text-base font-black font-mono text-red-400">{inc.risk_score}/100</span>
                   </div>
                 </div>
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed break-words">
                 {inc.summary}
               </p>
 
               {/* Badges / Metrics Row */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs font-mono text-slate-400">
-                <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs font-mono text-slate-400 border-t border-[#1E293B]/60">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                   <span className="flex items-center gap-1.5 text-amber-300">
-                    <User className="w-3.5 h-3.5" /> {inc.primary_entity_value}
+                    <User className="w-3.5 h-3.5 shrink-0" /> {inc.primary_entity_value}
                   </span>
                   <span className="flex items-center gap-1.5 text-sky-300">
-                    <Layers className="w-3.5 h-3.5" /> {inc.alert_count} Correlated Alerts
+                    <Layers className="w-3.5 h-3.5 shrink-0" /> {inc.alert_count} Alerts
                   </span>
                   <span className="flex items-center gap-1.5 text-purple-300">
-                    <Activity className="w-3.5 h-3.5" /> Confidence: {inc.confidence_level}%
+                    <Activity className="w-3.5 h-3.5 shrink-0" /> Confidence: {inc.confidence_level}%
                   </span>
                   <span className="flex items-center gap-1.5 text-slate-400">
-                    <Clock className="w-3.5 h-3.5" /> {inc.first_detected_at?.substring(11, 19)} → {inc.last_activity_at?.substring(11, 19)} UTC
+                    <Clock className="w-3.5 h-3.5 shrink-0" /> {inc.first_detected_at?.substring(11, 19)} → {inc.last_activity_at?.substring(11, 19)} UTC
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1 text-sky-400 group-hover:text-sky-300 font-semibold text-xs">
+                <div className="flex items-center gap-1 text-sky-400 group-hover:text-sky-300 font-semibold text-xs shrink-0 self-end sm:self-auto">
                   <span>Open Deep Investigation</span>
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </div>

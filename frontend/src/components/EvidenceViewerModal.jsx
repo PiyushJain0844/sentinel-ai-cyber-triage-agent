@@ -23,93 +23,93 @@ export const EvidenceViewerModal = () => {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
       onClick={closeEvidenceViewer}
     >
       <div 
-        className="relative w-full max-w-3xl bg-[#101827] border border-[#1E293B] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-3xl bg-[#101827] border border-[#1E293B] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E293B] bg-[#151F30]/80">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-[#1E293B] bg-[#151F30]/80">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="p-2 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white font-mono tracking-wide">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-sm sm:text-base font-bold text-white font-mono tracking-wide break-all">
                   EVIDENCE TELEMETRY: {selectedEvidence.id}
                 </h3>
                 <SeverityBadge severity={selectedEvidence.severity} />
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-[11px] sm:text-xs text-slate-400">
                 Ground-truth immutable security log verified by Log Monitoring Agent
               </p>
             </div>
           </div>
           <button
             onClick={closeEvidenceViewer}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition shrink-0 ml-2"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6">
           {/* Core Tuple Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <div className="bg-[#151F30] p-3 rounded-lg border border-[#1E293B]">
               <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
-                <Clock className="w-3.5 h-3.5 text-sky-400" /> Timestamp (UTC)
+                <Clock className="w-3.5 h-3.5 text-sky-400 shrink-0" /> Timestamp (UTC)
               </div>
-              <div className="text-sm font-mono text-slate-200">
+              <div className="text-xs sm:text-sm font-mono text-slate-200 break-all">
                 {selectedEvidence.timestamp || 'N/A'}
               </div>
             </div>
 
             <div className="bg-[#151F30] p-3 rounded-lg border border-[#1E293B]">
               <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
-                <Globe className="w-3.5 h-3.5 text-emerald-400" /> Source Origin IP
+                <Globe className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Source Origin IP
               </div>
-              <div className="text-sm font-mono text-slate-200">
+              <div className="text-xs sm:text-sm font-mono text-slate-200 break-all">
                 {selectedEvidence.source_ip || 'Internal Localhost'}
               </div>
             </div>
 
             <div className="bg-[#151F30] p-3 rounded-lg border border-[#1E293B]">
               <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
-                <User className="w-3.5 h-3.5 text-amber-400" /> Principal User
+                <User className="w-3.5 h-3.5 text-amber-400 shrink-0" /> Principal User
               </div>
-              <div className="text-sm font-mono text-slate-200">
+              <div className="text-xs sm:text-sm font-mono text-slate-200 break-all">
                 {selectedEvidence.username || 'SYSTEM'}
               </div>
             </div>
 
             <div className="bg-[#151F30] p-3 rounded-lg border border-[#1E293B]">
               <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
-                <Cpu className="w-3.5 h-3.5 text-purple-400" /> Device / Session ID
+                <Cpu className="w-3.5 h-3.5 text-purple-400 shrink-0" /> Device / Session ID
               </div>
-              <div className="text-sm font-mono text-slate-200">
+              <div className="text-xs sm:text-sm font-mono text-slate-200 break-all">
                 {selectedEvidence.device_id || 'UNKNOWN'}
               </div>
             </div>
 
             <div className="bg-[#151F30] p-3 rounded-lg border border-[#1E293B]">
               <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
-                <FileText className="w-3.5 h-3.5 text-sky-400" /> Action / Event Type
+                <FileText className="w-3.5 h-3.5 text-sky-400 shrink-0" /> Action / Event Type
               </div>
-              <div className="text-sm font-mono text-slate-200 font-semibold text-sky-300">
+              <div className="text-xs sm:text-sm font-mono text-slate-200 font-semibold text-sky-300 break-all">
                 {selectedEvidence.action || selectedEvidence.event_type}
               </div>
             </div>
 
             <div className="bg-[#151F30] p-3 rounded-lg border border-[#1E293B]">
               <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1">
-                <Terminal className="w-3.5 h-3.5 text-rose-400" /> Status / Outcome
+                <Terminal className="w-3.5 h-3.5 text-rose-400 shrink-0" /> Status / Outcome
               </div>
-              <div className="text-sm font-mono text-slate-200">
+              <div className="text-xs sm:text-sm font-mono text-slate-200 break-all">
                 {selectedEvidence.status || 'PROCESSED'}
               </div>
             </div>
@@ -135,12 +135,12 @@ export const EvidenceViewerModal = () => {
               </h4>
               <div className="space-y-2">
                 {details.notes && (
-                  <div className="text-xs text-amber-300 bg-amber-500/10 p-2.5 rounded border border-amber-500/20">
+                  <div className="text-xs text-amber-300 bg-amber-500/10 p-2.5 rounded border border-amber-500/20 break-words">
                     <span className="font-semibold">Analyst Note: </span>{details.notes}
                   </div>
                 )}
                 {details.mitre_technique && (
-                  <div className="text-xs text-sky-300 bg-sky-500/10 p-2.5 rounded border border-sky-500/20">
+                  <div className="text-xs text-sky-300 bg-sky-500/10 p-2.5 rounded border border-sky-500/20 break-words">
                     <span className="font-semibold">MITRE ATT&CK: </span>{details.mitre_technique}
                   </div>
                 )}
@@ -169,11 +169,11 @@ export const EvidenceViewerModal = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-[#1E293B] bg-[#151F30]/80 flex justify-between items-center text-xs text-slate-400">
-          <span>Sentinel USP 1: Ground-truth verifiable evidence guarantee</span>
+        <div className="px-4 py-3 sm:px-6 border-t border-[#1E293B] bg-[#151F30]/80 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-400">
+          <span className="text-center sm:text-left">Sentinel USP 1: Ground-truth verifiable evidence guarantee</span>
           <button
             onClick={closeEvidenceViewer}
-            className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium transition"
+            className="w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium transition text-center"
           >
             Close Viewer
           </button>

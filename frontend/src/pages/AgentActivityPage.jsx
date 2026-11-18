@@ -79,9 +79,9 @@ export const AgentActivityPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Autonomous AI Agent Operations
             </h1>
@@ -105,7 +105,7 @@ export const AgentActivityPage = () => {
 
       {/* Visual Pipeline Flow Header */}
       <div className="p-4 rounded-xl bg-[#101827] border border-[#1E293B] overflow-x-auto">
-        <div className="flex items-center justify-between min-w-[700px] text-xs font-mono font-bold text-slate-400">
+        <div className="flex items-center justify-between min-w-[650px] text-xs font-mono font-bold text-slate-400">
           <span className="text-sky-400">1. MONITORING</span>
           <span>→</span>
           <span className="text-amber-400">2. DETECTION</span>
@@ -121,7 +121,7 @@ export const AgentActivityPage = () => {
       </div>
 
       {/* Grid of 6 Specialized Agent Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {agents.map((agent) => {
           const meta = agentDetails[agent.name] || {
             icon: Bot,
@@ -134,14 +134,14 @@ export const AgentActivityPage = () => {
           return (
             <div 
               key={agent.name}
-              className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] hover:border-sky-500/30 transition shadow-xl flex flex-col justify-between space-y-4"
+              className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] hover:border-sky-500/30 transition shadow-xl flex flex-col justify-between space-y-4"
             >
               <div>
                 {/* Agent Header */}
-                <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#1E293B]">
                   <div className="flex items-center gap-2.5">
                     <div 
-                      className="p-2 rounded-xl border text-white"
+                      className="p-2 rounded-xl border text-white shrink-0"
                       style={{ backgroundColor: `${meta.color}15`, borderColor: `${meta.color}30` }}
                     >
                       <Icon className="w-5 h-5" style={{ color: meta.color }} />
@@ -152,7 +152,9 @@ export const AgentActivityPage = () => {
                     </div>
                   </div>
 
-                  <AgentStatusBadge status={agent.status} />
+                  <div className="self-start sm:self-auto">
+                    <AgentStatusBadge status={agent.status} />
+                  </div>
                 </div>
 
                 {/* Description */}
@@ -165,7 +167,7 @@ export const AgentActivityPage = () => {
                   <div className="text-[10px] font-mono uppercase text-slate-500 font-semibold">
                     Current Task:
                   </div>
-                  <div className="text-xs font-mono text-slate-200">
+                  <div className="text-xs font-mono text-slate-200 break-words">
                     {agent.current_task}
                   </div>
                 </div>
@@ -176,7 +178,7 @@ export const AgentActivityPage = () => {
                     <div className="text-[10px] font-mono uppercase text-sky-400 font-semibold flex items-center gap-1">
                       <Terminal className="w-3 h-3" /> Latest Output Telemetry:
                     </div>
-                    <div className="text-[11px] font-mono text-slate-300 leading-relaxed">
+                    <div className="text-[11px] font-mono text-slate-300 leading-relaxed break-words">
                       {agent.latest_output}
                     </div>
                   </div>
@@ -184,7 +186,7 @@ export const AgentActivityPage = () => {
               </div>
 
               {/* Footer Metrics */}
-              <div className="pt-3 border-t border-[#1E293B] flex items-center justify-between text-xs font-mono text-slate-400">
+              <div className="pt-3 border-t border-[#1E293B] flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-slate-400">
                 <span className="flex items-center gap-1.5 text-slate-300 font-semibold">
                   <Layers className="w-3.5 h-3.5 text-sky-400" />
                   {agent.processed_count} Events Processed

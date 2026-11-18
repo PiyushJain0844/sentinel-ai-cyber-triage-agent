@@ -107,7 +107,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* 6 Summary Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
         <MetricCard
           title="Total Events"
           value={stats.total_events}
@@ -156,23 +156,23 @@ export const DashboardPage = () => {
       <AgentPipelineVisualizer agents={agents} />
 
       {/* Analytics Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Events Over Time (Area Chart) */}
-        <div className="lg:col-span-2 bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-4">
+        <div className="lg:col-span-2 bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl flex flex-col justify-between min-w-0">
+          <div className="flex items-center justify-between mb-4 gap-2">
             <div>
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
                 Telemetry Volume & Burst Rate
               </h3>
-              <p className="text-xs text-slate-400">Security event frequency across detection timeline</p>
+              <p className="text-[11px] sm:text-xs text-slate-400">Security event frequency across detection timeline</p>
             </div>
-            <span className="text-xs font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
+            <span className="text-[10px] sm:text-xs font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20 shrink-0">
               UTC TIMELINE
             </span>
           </div>
 
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-56 sm:h-64 w-full min-w-0">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={180}>
               <AreaChart data={stats.events_over_time}>
                 <defs>
                   <linearGradient id="eventGradient" x1="0" y1="0" x2="0" y2="1">
@@ -192,25 +192,25 @@ export const DashboardPage = () => {
         </div>
 
         {/* Severity Distribution (Pie Chart) */}
-        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl flex flex-col justify-between">
+        <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl flex flex-col justify-between min-w-0">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
                 Threat Severity Profile
               </h3>
-              <p className="text-xs text-slate-400">Evaluated triage classification</p>
+              <p className="text-[11px] sm:text-xs text-slate-400">Evaluated triage classification</p>
             </div>
           </div>
 
-          <div className="h-52 w-full flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-48 sm:h-52 w-full min-w-0 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={160}>
               <PieChart>
                 <Pie
                   data={stats.severity_distribution}
                   cx="50%"
                   cy="50%"
-                  innerRadius={55}
-                  outerRadius={80}
+                  innerRadius={45}
+                  outerRadius={70}
                   paddingAngle={4}
                   dataKey="value"
                 >
@@ -228,8 +228,8 @@ export const DashboardPage = () => {
           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#1E293B]">
             {stats.severity_distribution.map((entry) => (
               <div key={entry.name} className="flex items-center justify-between text-xs">
-                <span className="flex items-center gap-1.5 text-slate-400">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: SEVERITY_COLORS[entry.name] || '#64748B' }} />
+                <span className="flex items-center gap-1.5 text-slate-400 text-[11px] sm:text-xs">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: SEVERITY_COLORS[entry.name] || '#64748B' }} />
                   {entry.name}
                 </span>
                 <span className="font-mono font-semibold text-slate-200">{entry.value}</span>
@@ -240,24 +240,24 @@ export const DashboardPage = () => {
       </div>
 
       {/* Recent Activity Live-Style Feed */}
-      <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <div>
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
               Live Ingested Telemetry Feed
             </h3>
-            <p className="text-xs text-slate-400">Click any event to inspect ground-truth evidence</p>
+            <p className="text-[11px] sm:text-xs text-slate-400">Click any event to inspect ground-truth evidence</p>
           </div>
           <button 
             onClick={() => navigate('/monitoring')}
-            className="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1"
+            className="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1 self-start sm:self-auto"
           >
             Open Live Monitor <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full text-left text-xs border-collapse min-w-[620px]">
             <thead>
               <tr className="border-b border-[#1E293B] text-slate-400 font-mono uppercase text-[11px]">
                 <th className="py-2.5 px-3">Event ID</th>

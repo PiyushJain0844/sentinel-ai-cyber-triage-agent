@@ -84,9 +84,9 @@ export const AttackInvestigationPage = () => {
   return (
     <div className="space-y-6">
       {/* Header & Incident Selector */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Autonomous Attack Investigation
             </h1>
@@ -100,12 +100,12 @@ export const AttackInvestigationPage = () => {
         </div>
 
         {/* Incident Dropdown */}
-        <div className="flex items-center gap-3">
-          <label className="text-xs text-slate-400 font-mono">Incident:</label>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full lg:w-auto">
+          <label className="text-xs text-slate-400 font-mono shrink-0">Incident:</label>
           <select
             value={selectedIncidentId}
             onChange={(e) => handleSelectIncident(e.target.value)}
-            className="bg-[#101827] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono"
+            className="w-full sm:w-auto max-w-full sm:max-w-xs bg-[#101827] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono truncate"
           >
             {incidents.map((inc) => (
               <option key={inc.id} value={inc.id}>
@@ -124,17 +124,17 @@ export const AttackInvestigationPage = () => {
       ) : (
         <>
           {/* Top Incident Overview Banner */}
-          <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-[#1E293B] shadow-xl space-y-4">
+          <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-[#1E293B] shadow-xl space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E293B]">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 <span className="text-sm font-mono font-bold text-sky-400">{incident.id}</span>
                 <SeverityBadge severity={incident.severity} />
                 <IncidentStatusBadge status={incident.status} />
               </div>
 
-              <div className="flex items-center gap-4 text-xs font-mono">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-mono">
                 <div className="text-slate-400">
-                  Risk Score: <span className="text-red-400 font-bold">{incident.risk_score}/100</span>
+                  Risk: <span className="text-red-400 font-bold">{incident.risk_score}/100</span>
                 </div>
                 <div className="text-slate-400">
                   Confidence: <span className="text-emerald-400 font-bold">{incident.confidence_level}%</span>
@@ -149,20 +149,20 @@ export const AttackInvestigationPage = () => {
             </div>
 
             <div className="space-y-1">
-              <h2 className="text-lg font-bold text-white tracking-tight">{incident.title}</h2>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{report?.summary || incident.summary}</p>
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">{incident.title}</h2>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed break-words">{report?.summary || incident.summary}</p>
             </div>
           </div>
 
           {/* USP 2: Interactive React Flow Attack Graph */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div className="flex items-center gap-2 text-xs font-mono uppercase text-slate-400 font-bold">
-                <GitBranch className="w-4 h-4 text-sky-400" />
-                <span>USP 2: Cross-Alert Attack Reconstruction Graph (React Flow)</span>
+                <GitBranch className="w-4 h-4 text-sky-400 shrink-0" />
+                <span>USP 2: Cross-Alert Attack Reconstruction Graph</span>
               </div>
-              <span className="text-xs text-slate-500">
-                Click any node to inspect evidence log
+              <span className="text-[11px] sm:text-xs text-slate-500 font-mono">
+                Tap node to inspect log evidence
               </span>
             </div>
             <AttackGraph graphData={incidentDetail.attack_graph} />
@@ -282,7 +282,7 @@ export const AttackInvestigationPage = () => {
 
             <button
               onClick={() => navigate('/responses')}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-slate-900 bg-sky-400 hover:bg-sky-300 transition shadow-lg shadow-sky-500/20"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-slate-900 bg-sky-400 hover:bg-sky-300 transition shadow-lg shadow-sky-500/20"
             >
               <span>Go to Response Center</span>
               <ArrowRight className="w-4 h-4" />

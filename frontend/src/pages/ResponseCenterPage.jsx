@@ -84,9 +84,9 @@ export const ResponseCenterPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#151F30]/90 backdrop-blur-md border border-[#1E293B]">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Remediation & Response Center
             </h1>
@@ -137,8 +137,8 @@ export const ResponseCenterPage = () => {
               >
                 {/* Header Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E293B]">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-xl border ${
+                  <div className="flex items-start sm:items-center gap-3">
+                    <div className={`p-2 rounded-xl border shrink-0 mt-0.5 sm:mt-0 ${
                       isVerified ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
                       isExecuted ? 'bg-sky-500/10 text-sky-400 border-sky-500/30' :
                       isApproved ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
@@ -149,14 +149,14 @@ export const ResponseCenterPage = () => {
                       <ShieldCheck className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="font-mono font-bold text-xs text-sky-400">{action.id}</span>
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
                           {action.action_type}
                         </span>
                         <SeverityBadge severity={action.risk_level === 'HIGH' ? 'CRITICAL' : action.risk_level === 'MEDIUM' ? 'HIGH' : 'LOW'} />
                       </div>
-                      <h3 className="text-base font-bold text-white tracking-tight mt-0.5">
+                      <h3 className="text-sm sm:text-base font-bold text-white tracking-tight mt-0.5 break-words">
                         {action.title}
                       </h3>
                     </div>
@@ -255,23 +255,23 @@ export const ResponseCenterPage = () => {
                 )}
 
                 {/* Human Approval / Execution Action Buttons */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#1E293B]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[#1E293B]">
                   <div className="text-xs text-slate-400 font-mono">
                     Incident: <span className="text-white font-semibold">{action.incident_id}</span>
                     {action.approval_decision_by && (
-                      <span className="ml-3 text-slate-400">
+                      <span className="block sm:inline sm:ml-3 text-slate-400">
                         Authorized By: <span className="text-sky-300">{action.approval_decision_by}</span>
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     {isPending && (
                       <>
                         <button
                           onClick={() => handleReject(action.id)}
                           disabled={isWorking}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition disabled:opacity-50"
+                          className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition disabled:opacity-50"
                         >
                           <X className="w-3.5 h-3.5" />
                           <span>Reject</span>
@@ -280,7 +280,7 @@ export const ResponseCenterPage = () => {
                         <button
                           onClick={() => handleApprove(action.id)}
                           disabled={isWorking}
-                          className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition shadow-md shadow-emerald-500/20 disabled:opacity-50"
+                          className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 sm:py-1.5 rounded-lg text-xs font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition shadow-md shadow-emerald-500/20 disabled:opacity-50"
                         >
                           <Check className="w-3.5 h-3.5 stroke-[3]" />
                           <span>Approve Action</span>
@@ -292,7 +292,7 @@ export const ResponseCenterPage = () => {
                       <button
                         onClick={() => handleExecute(action.id)}
                         disabled={isWorking}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-slate-900 bg-sky-400 hover:bg-sky-300 transition shadow-md shadow-sky-500/20 disabled:opacity-50"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-slate-900 bg-sky-400 hover:bg-sky-300 transition shadow-md shadow-sky-500/20 disabled:opacity-50"
                       >
                         <Play className="w-3.5 h-3.5 fill-current" />
                         <span>Simulate Safe Execution</span>
@@ -302,7 +302,7 @@ export const ResponseCenterPage = () => {
                     {isExecuted && (
                       <button
                         onClick={() => navigate('/verification')}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-white bg-sky-600 hover:bg-sky-500 transition shadow-md shadow-sky-600/20"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-white bg-sky-600 hover:bg-sky-500 transition shadow-md shadow-sky-600/20"
                       >
                         <span>Verify Resolution in Agent 6</span>
                         <ArrowRight className="w-3.5 h-3.5 text-white" />
@@ -312,7 +312,7 @@ export const ResponseCenterPage = () => {
                     {isVerified && (
                       <button
                         onClick={() => navigate('/verification')}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 transition"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 transition"
                       >
                         <span>Inspect Verification Proof</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -322,7 +322,7 @@ export const ResponseCenterPage = () => {
                     {isFailed && (
                       <button
                         onClick={() => navigate('/verification')}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-rose-300 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 transition"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-rose-300 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 transition"
                       >
                         <span>Inspect Failure & Reopening</span>
                         <ArrowRight className="w-3.5 h-3.5" />
