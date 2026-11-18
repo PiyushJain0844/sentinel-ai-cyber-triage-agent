@@ -126,6 +126,8 @@ export const ResponseCenterPage = () => {
             const isApproved = action.status === 'APPROVED';
             const isExecuted = action.status === 'EXECUTED';
             const isRejected = action.status === 'REJECTED';
+            const isVerified = action.status === 'VERIFIED';
+            const isFailed = action.status === 'FAILED';
             const isWorking = processingId === action.id;
 
             return (
@@ -137,9 +139,11 @@ export const ResponseCenterPage = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E293B]">
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-xl border ${
-                      isExecuted ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
-                      isApproved ? 'bg-sky-500/10 text-sky-400 border-sky-500/30' :
+                      isVerified ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
+                      isExecuted ? 'bg-sky-500/10 text-sky-400 border-sky-500/30' :
+                      isApproved ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
                       isRejected ? 'bg-slate-800 text-slate-400 border-slate-700' :
+                      isFailed ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' :
                       'bg-amber-500/10 text-amber-400 border-amber-500/30'
                     }`}>
                       <ShieldCheck className="w-5 h-5" />
@@ -160,15 +164,21 @@ export const ResponseCenterPage = () => {
 
                   {/* Status Badge */}
                   <div>
-                    {isExecuted && (
+                    {isVerified && (
                       <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                        CLOSED-LOOP VERIFIED
+                      </span>
+                    )}
+                    {isExecuted && (
+                      <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-sky-500/15 text-sky-300 border border-sky-500/30 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-sky-400" />
                         SIMULATION EXECUTED
                       </span>
                     )}
                     {isApproved && (
-                      <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-sky-500/15 text-sky-300 border border-sky-500/30 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-sky-400" />
+                      <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-blue-400" />
                         APPROVED BY ANALYST
                       </span>
                     )}
@@ -181,6 +191,11 @@ export const ResponseCenterPage = () => {
                     {isRejected && (
                       <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-red-500/15 text-red-300 border border-red-500/30">
                         REJECTED
+                      </span>
+                    )}
+                    {isFailed && (
+                      <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                        VERIFICATION FAILED: REOPENED
                       </span>
                     )}
                   </div>
@@ -287,10 +302,30 @@ export const ResponseCenterPage = () => {
                     {isExecuted && (
                       <button
                         onClick={() => navigate('/verification')}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-white bg-[#101827] hover:bg-[#1E293B] border border-emerald-500/40 transition"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-white bg-sky-600 hover:bg-sky-500 transition shadow-md shadow-sky-600/20"
                       >
                         <span>Verify Resolution in Agent 6</span>
-                        <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                        <ArrowRight className="w-3.5 h-3.5 text-white" />
+                      </button>
+                    )}
+
+                    {isVerified && (
+                      <button
+                        onClick={() => navigate('/verification')}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 transition"
+                      >
+                        <span>Inspect Verification Proof</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+
+                    {isFailed && (
+                      <button
+                        onClick={() => navigate('/verification')}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-rose-300 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 transition"
+                      >
+                        <span>Inspect Failure & Reopening</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>

@@ -21,6 +21,12 @@ export const api = {
     return res.json();
   },
 
+  async getEventById(id) {
+    const res = await fetch(`${API_BASE}/events/${id}`);
+    if (!res.ok) throw new Error(`Failed to load event ${id}`);
+    return res.json();
+  },
+
   async ingestEvents(eventsList) {
     const res = await fetch(`${API_BASE}/events`, {
       method: 'POST',

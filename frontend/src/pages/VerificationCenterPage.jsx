@@ -93,7 +93,7 @@ export const VerificationCenterPage = () => {
       </div>
 
       {/* Executed Actions Ready For Verification */}
-      {executedActions.length > 0 && (
+      {executedActions.length > 0 ? (
         <div className="bg-[#151F30]/90 backdrop-blur-md rounded-2xl p-5 border border-sky-500/30 shadow-xl space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
             <div className="flex items-center gap-2">
@@ -149,6 +149,11 @@ export const VerificationCenterPage = () => {
               </div>
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="p-4 rounded-xl bg-[#151F30]/60 border border-[#1E293B] flex items-center justify-between text-xs text-slate-400">
+          <span>All executed remediation actions currently have active verification checks recorded.</span>
+          <span className="font-mono text-emerald-400">ACTIVE CLOSED-LOOP MONITORING</span>
         </div>
       )}
 
@@ -208,11 +213,28 @@ export const VerificationCenterPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <IncidentStatusBadge status={record.incident_status} />
-                      <span className="text-xs font-mono text-slate-500">
-                        {record.verified_at?.substring(11, 19)} UTC
-                      </span>
+                      <div className="flex items-center gap-1.5 ml-2">
+                        <button
+                          onClick={() => handleRunVerification(record.response_action_id, true)}
+                          disabled={verifyingId === record.response_action_id}
+                          className="px-2 py-0.5 rounded bg-[#151F30] hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-[10px] font-mono transition flex items-center gap-1"
+                          title="Test incident reopening by probing for persistent threat activity"
+                        >
+                          <AlertTriangle className="w-2.5 h-2.5" />
+                          <span>Simulate Failure</span>
+                        </button>
+                        <button
+                          onClick={() => handleRunVerification(record.response_action_id, false)}
+                          disabled={verifyingId === record.response_action_id}
+                          className="px-2 py-0.5 rounded bg-[#151F30] hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 text-[10px] font-mono transition flex items-center gap-1"
+                          title="Re-verify containment across all 4 checks"
+                        >
+                          <CheckCircle2 className="w-2.5 h-2.5" />
+                          <span>Re-Verify</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
 

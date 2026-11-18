@@ -6,12 +6,26 @@ import { X, ShieldCheck, Database, FileText, Cpu, Globe, User, Clock, Terminal }
 export const EvidenceViewerModal = () => {
   const { isEvidenceModalOpen, selectedEvidence, closeEvidenceViewer } = useSentinel();
 
+  // Close on Escape key
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isEvidenceModalOpen) {
+        closeEvidenceViewer();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isEvidenceModalOpen, closeEvidenceViewer]);
+
   if (!isEvidenceModalOpen || !selectedEvidence) return null;
 
   const details = selectedEvidence.details || {};
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn"
+      onClick={closeEvidenceViewer}
+    >
       <div 
         className="relative w-full max-w-3xl bg-[#101827] border border-[#1E293B] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}

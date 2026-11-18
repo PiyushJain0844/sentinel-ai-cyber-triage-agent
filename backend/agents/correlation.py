@@ -144,6 +144,14 @@ class AlertCorrelationAgent(BaseAgent):
         nodes = []
         edges = []
 
+        # Find matching alert event IDs for each kill-chain node
+        threat_evt_id = next((a["event_id"] for a in alerts if "Brute-Force" in a.get("title", "") or a.get("source_ip") == source_ip), "EVT-2026-1002")
+        user_evt_id = next((a["event_id"] for a in alerts if "Unfamiliar" in a.get("title", "") or a.get("username") == username), "EVT-2026-1003")
+        session_evt_id = next((a["event_id"] for a in alerts if "Impossible Travel" in a.get("title", "") or "SESSION" in str(a.get("device_id", ""))), "EVT-2026-1004")
+        files_evt_id = next((a["event_id"] for a in alerts if "File" in a.get("title", "") or "Share" in a.get("title", "")), "EVT-2026-1005")
+        exec_evt_id = next((a["event_id"] for a in alerts if "PowerShell" in a.get("title", "") or "Command" in a.get("title", "")), "EVT-2026-1006")
+        c2_evt_id = next((a["event_id"] for a in alerts if "Exfiltration" in a.get("title", "") or "C2" in a.get("title", "")), "EVT-2026-1007")
+
         # Node 1: External Adversary / Source IP (Threat Actor)
         nodes.append({
             "id": "node-threat-ip",
@@ -153,7 +161,8 @@ class AlertCorrelationAgent(BaseAgent):
                 "category": "threat_origin",
                 "entity": source_ip,
                 "badge": "Unfamiliar IP / ASN9009",
-                "color": "#EF4444"
+                "color": "#EF4444",
+                "event_id": threat_evt_id
             },
             "position": {"x": 50, "y": 200}
         })
@@ -167,7 +176,8 @@ class AlertCorrelationAgent(BaseAgent):
                 "category": "user_account",
                 "entity": username,
                 "badge": "QA Engineer / Corporate SSO",
-                "color": "#F59E0B"
+                "color": "#F59E0B",
+                "event_id": user_evt_id
             },
             "position": {"x": 300, "y": 200}
         })
@@ -191,7 +201,8 @@ class AlertCorrelationAgent(BaseAgent):
                 "category": "session_device",
                 "entity": "SESSION-TK-9921",
                 "badge": "Impossible Travel (RO)",
-                "color": "#38BDF8"
+                "color": "#38BDF8",
+                "event_id": session_evt_id
             },
             "position": {"x": 550, "y": 200}
         })
@@ -214,7 +225,8 @@ class AlertCorrelationAgent(BaseAgent):
                 "category": "sensitive_data",
                 "entity": "Executive & R&D Files",
                 "badge": "Bulk Unauthorized Read",
-                "color": "#A855F7"
+                "color": "#A855F7",
+                "event_id": files_evt_id
             },
             "position": {"x": 800, "y": 80}
         })
@@ -237,7 +249,8 @@ class AlertCorrelationAgent(BaseAgent):
                 "category": "execution",
                 "entity": "FS-CORP-FIN01",
                 "badge": "LOLBAS Stager (T1059.001)",
-                "color": "#EF4444"
+                "color": "#EF4444",
+                "event_id": exec_evt_id
             },
             "position": {"x": 800, "y": 320}
         })
@@ -260,7 +273,8 @@ class AlertCorrelationAgent(BaseAgent):
                 "category": "c2_exfiltration",
                 "entity": "203.0.113.199",
                 "badge": "50MB Stream (T1041)",
-                "color": "#DC2626"
+                "color": "#DC2626",
+                "event_id": c2_evt_id
             },
             "position": {"x": 1080, "y": 200}
         })

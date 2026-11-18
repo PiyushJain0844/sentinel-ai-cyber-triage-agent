@@ -285,9 +285,12 @@ export const DashboardPage = () => {
                   <td className="py-3 px-3 text-slate-300">{evt.source_ip}</td>
                   <td className="py-3 px-3 text-amber-300">{evt.username}</td>
                   <td className="py-3 px-3 text-right">
-                    <span className="text-[11px] text-sky-400 hover:underline">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); openEvidenceViewer(evt.id); }}
+                      className="text-[11px] text-sky-400 hover:underline px-2 py-0.5 rounded bg-[#101827] border border-[#1E293B]"
+                    >
                       Evidence →
-                    </span>
+                    </button>
                   </td>
                 </tr>
               ))}

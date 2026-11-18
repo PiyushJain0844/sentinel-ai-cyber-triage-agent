@@ -37,7 +37,7 @@ def approve_response(response_id: str, request: ActionApprovalRequest = ActionAp
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/{response_id}/reject", response_model=ResponseActionResponse)
-def reject_response(response_id: str, request: ActionApprovalRequest):
+def reject_response(response_id: str, request: ActionApprovalRequest = ActionApprovalRequest()):
     try:
         updated = response_agent.process_decision(
             action_id=response_id,

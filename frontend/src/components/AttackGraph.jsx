@@ -132,7 +132,9 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
         onNodeClick={(_, node) => {
           if (onSelectNode) onSelectNode(node);
           // If node has event evidence, trigger evidence viewer
-          if (node.id === 'node-threat-ip') openEvidenceViewer('EVT-2026-1002');
+          if (node.data?.event_id) {
+            openEvidenceViewer(node.data.event_id);
+          } else if (node.id === 'node-threat-ip') openEvidenceViewer('EVT-2026-1002');
           else if (node.id === 'node-compromised-user') openEvidenceViewer('EVT-2026-1003');
           else if (node.id === 'node-session') openEvidenceViewer('EVT-2026-1004');
           else if (node.id === 'node-restricted-files') openEvidenceViewer('EVT-2026-1005');

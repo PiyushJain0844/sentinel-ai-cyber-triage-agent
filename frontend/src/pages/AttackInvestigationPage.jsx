@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 
 export const AttackInvestigationPage = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { refreshTrigger, openEvidenceViewer, showNotification } = useSentinel();
 
@@ -31,15 +31,32 @@ export const AttackInvestigationPage = () => {
   const [incidentDetail, setIncidentDetail] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Sync state if URL query param changes
+  useEffect(() => {
+    const urlId = searchParams.get('id');
+    if (urlId && urlId !== selectedIncidentId) {
+      setSelectedIncidentId(urlId);
+    }
+  }, [searchParams]);
+
   // Load list of incidents
   useEffect(() => {
     api.getIncidents().then((list) => {
       setIncidents(list);
-      if (!selectedIncidentId && list.length > 0) {
+      const urlId = searchParams.get('id');
+      if (urlId && list.some(i => i.id === urlId)) {
+        setSelectedIncidentId(urlId);
+      } else if (!selectedIncidentId && list.length > 0) {
         setSelectedIncidentId(list[0].id);
+        setSearchParams({ id: list[0].id }, { replace: true });
       }
     }).catch(() => {});
   }, [refreshTrigger]);
+
+  const handleSelectIncident = (id) => {
+    setSelectedIncidentId(id);
+    setSearchParams({ id });
+  };
 
   // Load detail of selected incident
   useEffect(() => {
@@ -87,7 +104,7 @@ export const AttackInvestigationPage = () => {
           <label className="text-xs text-slate-400 font-mono">Incident:</label>
           <select
             value={selectedIncidentId}
-            onChange={(e) => setSelectedIncidentId(e.target.value)}
+            onChange={(e) => handleSelectIncident(e.target.value)}
             className="bg-[#101827] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono"
           >
             {incidents.map((inc) => (

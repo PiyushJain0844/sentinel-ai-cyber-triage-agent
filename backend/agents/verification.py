@@ -128,6 +128,14 @@ class VerificationAgent(BaseAgent):
                 WHERE id = ?
             """, (new_incident_status, incident_id))
 
+            # Update Response Action status to reflect closed loop verification result
+            new_action_status = "VERIFIED" if not simulate_failure else "FAILED"
+            cursor.execute("""
+                UPDATE response_actions 
+                SET status = ? 
+                WHERE id = ?
+            """, (new_action_status, action_id))
+
         duration_ms = int((time.time() - start_time) * 1000)
         self.execution_duration_ms = duration_ms
 

@@ -103,6 +103,8 @@ def test_alert_correlation_and_attack_graph():
     assert "nodes" in inc["attack_graph"]
     assert "edges" in inc["attack_graph"]
     assert len(inc["attack_graph"]["nodes"]) >= 3
+    # Verify node data contains event_id for interactive inspection
+    assert any("event_id" in n["data"] for n in inc["attack_graph"]["nodes"])
 
 def test_evidence_first_investigation_report():
     res = orchestrator.load_sample_attack_scenario()
@@ -129,7 +131,7 @@ def test_response_approval_rejection_and_simulation():
     act1 = actions[0]
     act2 = actions[1]
 
-    # Test rejection
+    # Test rejection with default and explicit reason
     rej_res = responses.reject_response(act2.id, ActionApprovalRequest(decision_by="Test Analyst", rejection_reason="Not needed"))
     assert rej_res.status == "REJECTED"
 
@@ -157,6 +159,11 @@ def test_closed_loop_verification_success():
     assert vdata.verification_status == "VERIFIED_CONTAINED"
     assert vdata.incident_status == "THREAT_CONTAINED"
 
+    # Verify that response_actions was updated to VERIFIED in database
+    refreshed_actions = responses.get_responses()
+    refreshed_act1 = next(a for a in refreshed_actions if a.id == act1.id)
+    assert refreshed_act1.status == "VERIFIED"
+
 def test_closed_loop_verification_failure_reopening():
     res = orchestrator.load_sample_attack_scenario()
     incident_id = res["incidents"][0]["id"]
@@ -172,6 +179,11 @@ def test_closed_loop_verification_failure_reopening():
     assert vdata.verification_status == "VERIFICATION_FAILED"
     # USP 3: Incident reopened
     assert vdata.incident_status == "REOPENED_INVESTIGATION_REQUIRED"
+
+    # Verify that response_actions was updated to FAILED in database
+    refreshed_actions = responses.get_responses()
+    refreshed_act1 = next(a for a in refreshed_actions if a.id == act1.id)
+    assert refreshed_act1.status == "FAILED"
 
 def test_all_six_agents_status():
     agents = ALL_AGENTS
@@ -201,12 +213,22 @@ def test_events_filtering_and_ingestion():
     assert len(critical_events) > 0
     assert all(e.severity == "CRITICAL" for e in critical_events)
 
-    # Search keyword
+    # Search keyword by username
     searched = events.get_events(severity="ALL", event_type="ALL", search="sarah", limit=50)
     assert len(searched) > 0
     assert any("sarah" in (e.username or "").lower() for e in searched)
 
-    # Ingest new custom event
+    # Search by event ID directly
+    first_id = critical_events[0].id
+    by_search_id = events.get_events(search=first_id, limit=10)
+    assert len(by_search_id) > 0
+    assert any(e.id == first_id for e in by_search_id)
+
+    # Direct primary key lookup by ID
+    exact_evt = events.get_event_by_id(first_id)
+    assert exact_evt.id == first_id
+
+    # Ingest new custom single event (test single object ingestion)
     new_evt = SecurityEventCreate(
         timestamp="2026-11-18T10:20:00Z",
         source_ip="192.168.1.50",
@@ -216,5 +238,5 @@ def test_events_filtering_and_ingestion():
         status="SUCCESS",
         severity="LOW"
     )
-    res = events.ingest_events([new_evt])
+    res = events.ingest_events(new_evt)
     assert res["status"] == "success"

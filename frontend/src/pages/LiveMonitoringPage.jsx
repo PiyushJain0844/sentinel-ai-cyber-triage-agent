@@ -228,6 +228,7 @@ export const LiveMonitoringPage = () => {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <button 
+                        onClick={(e) => { e.stopPropagation(); openEvidenceViewer(evt.id); }}
                         className="px-2.5 py-1 rounded bg-[#101827] text-sky-400 hover:text-sky-300 border border-[#1E293B] text-[11px]"
                       >
                         Inspect →

@@ -11,9 +11,10 @@ export const SentinelProvider = ({ children }) => {
   const [notification, setNotification] = useState(null);
 
   const showNotification = useCallback((message, type = 'info') => {
-    setNotification({ message, type, id: Date.now() });
+    const notifId = Date.now();
+    setNotification({ message, type, id: notifId });
     setTimeout(() => {
-      setNotification(prev => (prev?.id === prev?.id ? null : prev));
+      setNotification(prev => (prev?.id === notifId ? null : prev));
     }, 4500);
   }, []);
 
@@ -23,17 +24,21 @@ export const SentinelProvider = ({ children }) => {
 
   const openEvidenceViewer = useCallback(async (eventId) => {
     try {
-      // Fetch event from API or search
-      const events = await api.getEvents({ search: eventId, limit: 5 });
-      const found = events.find(e => e.id === eventId) || events[0];
-      if (found) {
-        setSelectedEvidence(found);
-      } else {
-        setSelectedEvidence({ id: eventId, details: { note: "Historical evidence cited in security graph" } });
-      }
+      const event = await api.getEventById(eventId);
+      setSelectedEvidence(event);
       setIsEvidenceModalOpen(true);
     } catch (err) {
-      setSelectedEvidence({ id: eventId, error: "Could not load detailed event log" });
+      try {
+        const events = await api.getEvents({ search: eventId, limit: 5 });
+        const found = events.find(e => e.id === eventId) || events[0];
+        if (found) {
+          setSelectedEvidence(found);
+        } else {
+          setSelectedEvidence({ id: eventId, details: { note: "Historical evidence cited in security graph" } });
+        }
+      } catch (e) {
+        setSelectedEvidence({ id: eventId, error: "Could not load detailed event log" });
+      }
       setIsEvidenceModalOpen(true);
     }
   }, []);
