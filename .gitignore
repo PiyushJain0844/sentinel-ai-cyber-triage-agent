@@ -1,0 +1,43 @@
+# Node & Frontend dependencies
+node_modules/
+dist/
+build/
+.vite/
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Database & Runtime logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Hackathon Repo Size Protection (<10MB target)
+*.tar.gz
+*.zip
+*.bin
