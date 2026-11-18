@@ -3,7 +3,7 @@
 **"From Alert to Verified Resolution"**
 
 > **Hackathon Track:** PS06: AI-Powered Cybersecurity Triage  
-> **Repository Size:** ~370 KB (Strictly under 10 MB Hackathon Limit)  
+> **Repository Size:** ~200 KB (Strictly under 10 MB Hackathon Limit)  
 > **Core Architecture:** 6 Specialized Autonomous Python Agents + React Flow + FastAPI + SQLite  
 
 ---
@@ -206,7 +206,7 @@ backend/tests/test_sentinel.py::test_events_filtering_and_ingestion PASSED
 ## 9. Hackathon Repository Size Verification
 
 The project strictly abides by the hackathon requirement of **< 10 MB total repository size**:
-* Total source code size: **~370 KB**
+* Total source code size: **~200 KB** (195.42 KiB git tracked footprint)
 * Comprehensive `.gitignore` excludes `node_modules/`, `dist/`, `.venv/`, `*.db`, and cache files.
 * Only clean source files, sample JSON, and configs are tracked.
 
