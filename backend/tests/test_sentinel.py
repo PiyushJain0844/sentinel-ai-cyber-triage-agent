@@ -242,7 +242,7 @@ def test_events_filtering_and_ingestion():
     assert res["status"] == "success"
 
 def test_authentication_flow():
-    # 1. Valid login with demo analyst
+    # 1. Valid login with demo analyst (Role: Senior SOC Lead Analyst)
     login_req = auth.LoginRequest(
         email="analyst@sentinel.cyber",
         password="Sentinel@2026!",
@@ -252,21 +252,58 @@ def test_authentication_flow():
     assert login_res.token.startswith("stnl_")
     assert login_res.user.email == "analyst@sentinel.cyber"
     assert login_res.user.role == "Senior SOC Lead Analyst"
+    assert "Level 4" in login_res.user.clearance
 
-    # 2. Verify active session token
+    # 2. Valid login with demo director (Role: SecOps Director)
+    admin_req = auth.LoginRequest(
+        email="admin@sentinel.cyber",
+        password="SentinelAdmin#1",
+        remember_me=False
+    )
+    admin_res = auth.login(admin_req)
+    assert admin_res.token.startswith("stnl_")
+    assert admin_res.user.email == "admin@sentinel.cyber"
+    assert admin_res.user.role == "SecOps Director"
+    assert "Level 5" in admin_res.user.clearance
+
+    # 3. Verify SQLite persistence of users and sessions
+    with init_db_conn() if False else auth.get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT email, password_hash, salt, role FROM users WHERE email = 'analyst@sentinel.cyber'")
+        user_db = cursor.fetchone()
+        assert user_db is not None
+        assert user_db["email"] == "analyst@sentinel.cyber"
+        assert len(user_db["password_hash"]) == 64  # SHA-256 hex string
+        assert len(user_db["salt"]) > 0
+
+        # Verify session is persisted in SQLite
+        cursor.execute("SELECT token, user_id FROM user_sessions WHERE token = ?", (login_res.token,))
+        session_db = cursor.fetchone()
+        assert session_db is not None
+
+    # 4. Verify session from database across serverless restarts (wipe in-memory cache)
+    auth.ACTIVE_SESSIONS.clear()
     auth_header = f"Bearer {login_res.token}"
     verify_res = auth.verify_session(authorization=auth_header)
     assert verify_res["status"] == "valid"
     assert verify_res["user"]["name"] == "Sarah Connor"
+    assert verify_res["user"]["role"] == "Senior SOC Lead Analyst"
 
-    # 3. Invalid credentials test
+    # 5. Invalid credentials test
     bad_req = auth.LoginRequest(
         email="analyst@sentinel.cyber",
         password="WrongPassword123"
     )
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         auth.login(bad_req)
+    assert "Invalid credentials" in str(exc_info.value)
 
-    # 4. Logout test
+    # 6. Logout test (clears both memory and SQLite session)
     logout_res = auth.logout(authorization=auth_header)
     assert logout_res["status"] == "logged_out"
+    
+    # Verify session is gone from database
+    with auth.get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM user_sessions WHERE token = ?", (login_res.token,))
+        assert cursor.fetchone() is None

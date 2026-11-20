@@ -604,7 +604,7 @@ dist/assets/index-vZDXvWCb.js   855.56 kB │ gzip: 239.66 kB
 
 ---
 
-## 16. Future Scope
+## 16. Future Scope 
 
 The following capabilities represent planned architectural enhancements for future production iterations:
 
@@ -616,15 +616,3 @@ The following capabilities represent planned architectural enhancements for futu
 * **Distributed Agent Workers**: Fanning out agent task execution using Celery or Redis task queues for high-volume enterprise event streams.
 
 ---
-
-## 17. Contributors & Acknowledgements
-
-* **Developed for**: Hackathon Track **PS06 — AI-Powered Cybersecurity Triage**
-* **Project Team**: SENTINEL AI Development Team
-* **Contact & Inquiries**: `[Insert Team Contact / Repository Link]`
-
----
-
-## 18. License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

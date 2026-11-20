@@ -1,4 +1,13 @@
-const API_BASE = '/api';
+function resolveApiBase() {
+  const envUrl = (typeof import.meta !== 'undefined' && import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL)) || '';
+  if (!envUrl || envUrl.trim() === '') {
+    return '/api';
+  }
+  const clean = envUrl.trim().replace(/\/+$/, '');
+  return clean.endsWith('/api') ? clean : `${clean}/api`;
+}
+
+const API_BASE = resolveApiBase();
 
 function getAuthHeaders() {
   const token = localStorage.getItem('sentinel_auth_token') || sessionStorage.getItem('sentinel_auth_token');
@@ -8,14 +17,30 @@ function getAuthHeaders() {
 export const api = {
   // Authentication
   async login(email, password, rememberMe = false) {
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, remember_me: rememberMe })
-    });
+    let res;
+    try {
+      res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, remember_me: rememberMe })
+      });
+    } catch (networkErr) {
+      throw new Error(`Unable to reach the security backend (${API_BASE}). Please verify the backend service is running and CORS is configured.`);
+    }
+
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || 'Authentication failed. Please check credentials.');
+      let errDetail = '';
+      try {
+        const errJson = await res.json();
+        errDetail = errJson.detail || errJson.message;
+      } catch (parseErr) {
+        if (res.status === 404) {
+          errDetail = `Authentication endpoint not found (HTTP 404 at ${API_BASE}/auth/login). Verify VITE_API_URL is configured in your deployment.`;
+        } else if (res.status >= 500) {
+          errDetail = `Backend server error (HTTP ${res.status}). Please check backend server logs.`;
+        }
+      }
+      throw new Error(errDetail || 'Authentication failed. Please check credentials.');
     }
     return res.json();
   },
@@ -23,7 +48,10 @@ export const api = {
   async verifySession(token) {
     const authToken = token || localStorage.getItem('sentinel_auth_token') || sessionStorage.getItem('sentinel_auth_token');
     const res = await fetch(`${API_BASE}/auth/verify`, {
-      headers: { 'Authorization': `Bearer ${authToken}` }
+      headers: { 
+        'Authorization': `Bearer ${authToken}`,
+        ...getAuthHeaders()
+      }
     });
     if (!res.ok) throw new Error('Session invalid or expired');
     return res.json();
@@ -35,7 +63,10 @@ export const api = {
       if (token) {
         await fetch(`${API_BASE}/auth/logout`, {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            ...getAuthHeaders()
+          }
         });
       }
     } catch (e) {
@@ -65,13 +96,17 @@ export const api = {
     if (search) params.append('search', search);
     if (limit) params.append('limit', limit);
 
-    const res = await fetch(`${API_BASE}/events?${params.toString()}`);
+    const res = await fetch(`${API_BASE}/events?${params.toString()}`, {
+      headers: { ...getAuthHeaders() }
+    });
     if (!res.ok) throw new Error('Failed to load security events');
     return res.json();
   },
 
   async getEventById(id) {
-    const res = await fetch(`${API_BASE}/events/${id}`);
+    const res = await fetch(`${API_BASE}/events/${id}`, {
+      headers: { ...getAuthHeaders() }
+    });
     if (!res.ok) throw new Error(`Failed to load event ${id}`);
     return res.json();
   },
@@ -79,7 +114,10 @@ export const api = {
   async ingestEvents(eventsList) {
     const res = await fetch(`${API_BASE}/events`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
       body: JSON.stringify(eventsList)
     });
     if (!res.ok) throw new Error('Failed to ingest events');
@@ -88,13 +126,17 @@ export const api = {
 
   // Incidents
   async getIncidents() {
-    const res = await fetch(`${API_BASE}/incidents`);
+    const res = await fetch(`${API_BASE}/incidents`, {
+      headers: { ...getAuthHeaders() }
+    });
     if (!res.ok) throw new Error('Failed to load incidents');
     return res.json();
   },
 
   async getIncidentDetail(id) {
-    const res = await fetch(`${API_BASE}/incidents/${id}`);
+    const res = await fetch(`${API_BASE}/incidents/${id}`, {
+      headers: { ...getAuthHeaders() }
+    });
     if (!res.ok) throw new Error(`Failed to load incident details for ${id}`);
     return res.json();
   },
@@ -102,7 +144,8 @@ export const api = {
   // Investigation
   async triggerInvestigation(incidentId) {
     const res = await fetch(`${API_BASE}/investigation/${incidentId}`, {
-      method: 'POST'
+      method: 'POST',
+      headers: { ...getAuthHeaders() }
     });
     if (!res.ok) throw new Error(`Failed to trigger investigation for ${incidentId}`);
     return res.json();
@@ -110,14 +153,18 @@ export const api = {
 
   // Agents Status
   async getAgentsStatus() {
-    const res = await fetch(`${API_BASE}/agents/status`);
+    const res = await fetch(`${API_BASE}/agents/status`, {
+      headers: { ...getAuthHeaders() }
+    });
     if (!res.ok) throw new Error('Failed to load agent statuses');
     return res.json();
   },
 
   // Responses
   async getResponses() {
-    const res = await fetch(`${API_BASE}/responses`);
+    const res = await fetch(`${API_BASE}/responses`, {
+      headers: { ...getAuthHeaders() }
+    });
     if (!res.ok) throw new Error('Failed to load response recommendations');
     return res.json();
   },
@@ -125,7 +172,10 @@ export const api = {
   async approveResponse(id, decisionBy = 'SOC Lead Analyst') {
     const res = await fetch(`${API_BASE}/responses/${id}/approve`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
       body: JSON.stringify({ decision_by: decisionBy })
     });
     if (!res.ok) throw new Error(`Failed to approve response ${id}`);
@@ -135,7 +185,10 @@ export const api = {
   async rejectResponse(id, decisionBy = 'SOC Lead Analyst', rejectionReason = '') {
     const res = await fetch(`${API_BASE}/responses/${id}/reject`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
       body: JSON.stringify({ decision_by: decisionBy, rejection_reason: rejectionReason })
     });
     if (!res.ok) throw new Error(`Failed to reject response ${id}`);
@@ -144,7 +197,8 @@ export const api = {
 
   async executeResponse(id) {
     const res = await fetch(`${API_BASE}/responses/${id}/execute`, {
-      method: 'POST'
+      method: 'POST',
+      headers: { ...getAuthHeaders() }
     });
     if (!res.ok) throw new Error(`Failed to execute response ${id}`);
     return res.json();
@@ -152,7 +206,9 @@ export const api = {
 
   // Verification
   async getVerificationRecords() {
-    const res = await fetch(`${API_BASE}/verification`);
+    const res = await fetch(`${API_BASE}/verification`, {
+      headers: { ...getAuthHeaders() }
+    });
     if (!res.ok) throw new Error('Failed to load verification records');
     return res.json();
   },
@@ -160,7 +216,10 @@ export const api = {
   async performVerification(actionId, simulateFailure = false, notes = '') {
     const res = await fetch(`${API_BASE}/verification/${actionId}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
       body: JSON.stringify({ simulate_failure: simulateFailure, analyst_notes: notes })
     });
     if (!res.ok) throw new Error(`Failed to perform verification for action ${actionId}`);
@@ -170,7 +229,8 @@ export const api = {
   // Simulation
   async startSimulation() {
     const res = await fetch(`${API_BASE}/simulation/start`, {
-      method: 'POST'
+      method: 'POST',
+      headers: { ...getAuthHeaders() }
     });
     if (!res.ok) throw new Error('Failed to start sample attack simulation');
     return res.json();
@@ -178,7 +238,8 @@ export const api = {
 
   async resetSimulation() {
     const res = await fetch(`${API_BASE}/simulation/reset`, {
-      method: 'POST'
+      method: 'POST',
+      headers: { ...getAuthHeaders() }
     });
     if (!res.ok) throw new Error('Failed to reset simulation environment');
     return res.json();
@@ -186,7 +247,9 @@ export const api = {
 
   // Settings
   async getSettingsStatus() {
-    const res = await fetch(`${API_BASE}/settings/status`);
+    const res = await fetch(`${API_BASE}/settings/status`, {
+      headers: { ...getAuthHeaders() }
+    });
     if (!res.ok) throw new Error('Failed to load system settings');
     return res.json();
   }

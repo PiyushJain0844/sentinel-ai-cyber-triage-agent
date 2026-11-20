@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.config import settings
-from backend.database.db import init_db, get_db
+from backend.database.db import init_db, get_db, seed_demo_users
 from backend.services.orchestrator import orchestrator
 from backend.routes import (
     auth,
@@ -22,8 +22,10 @@ from backend.routes import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize SQLite tables
+    # Initialize SQLite tables and seed authorized demo users
     init_db()
+    with get_db() as conn:
+        seed_demo_users(conn)
     
     # Check if empty, load baseline sample scenario automatically
     with get_db() as conn:
@@ -44,13 +46,25 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS Middleware
+# CORS Middleware supporting local development, Vercel preview/production domains, and custom origins
+cors_origins_env = os.getenv("CORS_ORIGINS", "")
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+]
+if cors_origins_env:
+    allowed_origins.extend([o.strip() for o in cors_origins_env.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins if cors_origins_env else ["*"],
+    allow_origin_regex=r"^https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Include all modular routers

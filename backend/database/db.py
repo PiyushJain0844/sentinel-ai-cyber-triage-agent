@@ -1,10 +1,49 @@
 import sqlite3
 import json
 import os
+import hashlib
+import secrets
+from typing import Optional, Tuple
 from contextlib import contextmanager
 from backend.config import settings
 
 DB_FILE = settings.DATABASE_PATH
+
+def hash_password(password: str, salt: Optional[str] = None) -> Tuple[str, str]:
+    """Hashes a password using PBKDF2-HMAC-SHA256 with 100,000 iterations."""
+    if not salt:
+        salt = secrets.token_hex(16)
+    hashed = hashlib.pbkdf2_hmac(
+        'sha256',
+        password.encode('utf-8'),
+        salt.encode('utf-8'),
+        100000
+    ).hex()
+    return hashed, salt
+
+def verify_password(password: str, stored_hash: str, salt: str) -> bool:
+    """Verifies a plain password against the stored PBKDF2 hash using timing-safe comparison."""
+    computed_hash, _ = hash_password(password, salt)
+    return secrets.compare_digest(computed_hash, stored_hash)
+
+DEMO_USERS = [
+    {
+        "id": "USR-SEC-091",
+        "name": "Sarah Connor",
+        "email": "analyst@sentinel.cyber",
+        "password": "Sentinel@2026!",
+        "role": "Senior SOC Lead Analyst",
+        "clearance": "Level 4 (Top Secret / SCI)"
+    },
+    {
+        "id": "USR-SEC-001",
+        "name": "Marcus Vance",
+        "email": "admin@sentinel.cyber",
+        "password": "SentinelAdmin#1",
+        "role": "SecOps Director",
+        "clearance": "Level 5 (Directorate Access)"
+    }
+]
 
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE, check_same_thread=False)
@@ -24,10 +63,64 @@ def get_db():
     finally:
         conn.close()
 
+def seed_demo_users(conn):
+    """Ensures authorized enterprise demo users are seeded and up to date in SQLite."""
+    cursor = conn.cursor()
+    for user_info in DEMO_USERS:
+        cursor.execute("SELECT id, password_hash, salt FROM users WHERE email = ?", (user_info["email"],))
+        existing = cursor.fetchone()
+        if not existing:
+            pwd_hash, salt = hash_password(user_info["password"])
+            cursor.execute(
+                """
+                INSERT INTO users (id, name, email, password_hash, salt, role, clearance)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (user_info["id"], user_info["name"], user_info["email"], pwd_hash, salt, user_info["role"], user_info["clearance"])
+            )
+        else:
+            # Re-verify and sync hash if needed
+            if not verify_password(user_info["password"], existing["password_hash"], existing["salt"]):
+                pwd_hash, salt = hash_password(user_info["password"])
+                cursor.execute(
+                    """
+                    UPDATE users 
+                    SET password_hash = ?, salt = ?, role = ?, clearance = ?, name = ?
+                    WHERE id = ?
+                    """,
+                    (pwd_hash, salt, user_info["role"], user_info["clearance"], user_info["name"], existing["id"])
+                )
+
 def init_db():
     """Initializes tables for SENTINEL AI."""
     with get_db() as conn:
         cursor = conn.cursor()
+
+        # 0. Enterprise Users Table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            salt TEXT NOT NULL,
+            role TEXT NOT NULL,
+            clearance TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+
+        # 0b. Persistent User Sessions Table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_sessions (
+            token TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            expires_at INTEGER NOT NULL,
+            remember_me INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        );
+        """)
         
         # 1. Raw / Normalized Security Events Table
         cursor.execute("""
@@ -164,8 +257,11 @@ def init_db():
         );
         """)
 
+        # Ensure demo accounts exist in database
+        seed_demo_users(conn)
+
 def reset_db():
-    """Resets all data back to clean state."""
+    """Resets all data back to clean state while preserving demo credentials."""
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM verification_records;")
@@ -175,3 +271,5 @@ def reset_db():
         cursor.execute("DELETE FROM incidents;")
         cursor.execute("DELETE FROM security_events;")
         cursor.execute("DELETE FROM agent_activity_logs;")
+        cursor.execute("DELETE FROM user_sessions;")
+        seed_demo_users(conn)
