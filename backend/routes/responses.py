@@ -8,7 +8,8 @@ from backend.schemas.schemas import ResponseActionResponse, ActionApprovalReques
 router = APIRouter(prefix="/api/responses", tags=["Responses"])
 
 @router.get("", response_model=List[ResponseActionResponse])
-def get_responses():
+def get_responses() -> List[ResponseActionResponse]:
+    """Retrieves all recommended and executed response actions."""
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM response_actions ORDER BY created_at DESC")
@@ -23,7 +24,8 @@ def get_responses():
         return results
 
 @router.post("/{response_id}/approve", response_model=ResponseActionResponse)
-def approve_response(response_id: str, request: ActionApprovalRequest = ActionApprovalRequest()):
+def approve_response(response_id: str, request: ActionApprovalRequest = ActionApprovalRequest()) -> ResponseActionResponse:
+    """Records human analyst approval for a remediation action."""
     try:
         updated = response_agent.process_decision(
             action_id=response_id,
@@ -37,7 +39,8 @@ def approve_response(response_id: str, request: ActionApprovalRequest = ActionAp
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/{response_id}/reject", response_model=ResponseActionResponse)
-def reject_response(response_id: str, request: ActionApprovalRequest = ActionApprovalRequest()):
+def reject_response(response_id: str, request: ActionApprovalRequest = ActionApprovalRequest()) -> ResponseActionResponse:
+    """Records human analyst rejection for a remediation action with justification."""
     try:
         updated = response_agent.process_decision(
             action_id=response_id,
@@ -52,7 +55,8 @@ def reject_response(response_id: str, request: ActionApprovalRequest = ActionApp
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/{response_id}/execute", response_model=ResponseActionResponse)
-def execute_response(response_id: str):
+def execute_response(response_id: str) -> ResponseActionResponse:
+    """Executes a simulated remediation action in controlled environment."""
     try:
         executed = response_agent.simulate_execution(action_id=response_id)
         executed["supporting_evidence"] = json.loads(executed["supporting_evidence_json"]) if executed.get("supporting_evidence_json") else []

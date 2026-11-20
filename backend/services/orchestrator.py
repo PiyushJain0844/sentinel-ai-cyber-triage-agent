@@ -12,7 +12,9 @@ from backend.agents import (
 from backend.database.db import reset_db, init_db
 
 class MultiAgentOrchestrator:
-    def __init__(self):
+    """Coordinates the 6-agent triage, correlation, investigation, and response pipeline."""
+
+    def __init__(self) -> None:
         init_db()
 
     def run_pipeline(self, raw_logs: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -58,7 +60,7 @@ class MultiAgentOrchestrator:
 
         return self.run_pipeline(sample_logs)
 
-    def reset_system(self):
+    def reset_system(self) -> None:
         """Resets all data and reinitializes agent states."""
         reset_db()
         for agent in [monitoring_agent, detection_agent, correlation_agent, investigation_agent, response_agent, verification_agent]:

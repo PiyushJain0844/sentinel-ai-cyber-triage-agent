@@ -8,14 +8,11 @@ import {
   Check, 
   X, 
   Play, 
-  AlertTriangle, 
   Clock, 
-  ArrowRight,
-  Database,
-  Terminal,
-  UserCheck,
-  RotateCw,
-  Cpu
+  ArrowRight, 
+  Database, 
+  Terminal, 
+  RotateCw 
 } from 'lucide-react';
 
 export const ResponseCenterPage = () => {

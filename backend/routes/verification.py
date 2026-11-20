@@ -8,7 +8,8 @@ from backend.schemas.schemas import VerificationResponse, VerificationRequest
 router = APIRouter(prefix="/api/verification", tags=["Verification"])
 
 @router.get("", response_model=List[VerificationResponse])
-def get_verification_records():
+def get_verification_records() -> List[VerificationResponse]:
+    """Retrieves historical closed-loop verification records and posture telemetry."""
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("""
@@ -27,7 +28,7 @@ def get_verification_records():
         return results
 
 @router.post("/{response_id}", response_model=VerificationResponse)
-def perform_verification(response_id: str, request: VerificationRequest = VerificationRequest()):
+def perform_verification(response_id: str, request: VerificationRequest = VerificationRequest()) -> VerificationResponse:
     """Executes closed-loop verification check with optional failure simulation."""
     try:
         result = verification_agent.verify_action(

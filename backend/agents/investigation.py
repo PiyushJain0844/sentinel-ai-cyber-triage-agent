@@ -1,8 +1,7 @@
 import json
 import time
 import uuid
-from datetime import datetime, timezone
-from typing import List, Dict, Any, Optional
+from typing import Optional, Dict, Any
 from backend.agents.base import BaseAgent
 from backend.database.db import get_db
 from backend.services.gemini_service import gemini_service
@@ -14,7 +13,7 @@ class InvestigationAgent(BaseAgent):
             role="Evidence-first deep threat investigation, root-cause analysis & report generation"
         )
 
-    def investigate_incident(self, incident_id: str) -> Dict[str, Any]:
+    def investigate_incident(self, incident_id: str) -> Optional[Dict[str, Any]]:
         """Performs evidence-backed investigation for a correlated incident."""
         start_time = time.time()
         self.update_status("PROCESSING", f"Investigating incident {incident_id} with evidence correlation")

@@ -1,4 +1,3 @@
-import json
 from fastapi import APIRouter
 from backend.database.db import get_db
 from backend.schemas.schemas import DashboardStatsResponse
@@ -6,7 +5,8 @@ from backend.schemas.schemas import DashboardStatsResponse
 router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
 
 @router.get("/stats", response_model=DashboardStatsResponse)
-def get_dashboard_stats():
+def get_dashboard_stats() -> DashboardStatsResponse:
+    """Computes and aggregates SOC metrics, incident status counts, and telemetry distributions."""
     with get_db() as conn:
         cursor = conn.cursor()
         

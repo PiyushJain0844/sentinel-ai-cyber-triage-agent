@@ -30,7 +30,8 @@ class LoginResponse(BaseModel):
 ACTIVE_SESSIONS: Dict[str, Dict[str, Any]] = {}
 
 @router.post("/login", response_model=LoginResponse)
-def login(request: LoginRequest):
+def login(request: LoginRequest) -> LoginResponse:
+    """Authenticates enterprise user credentials against PBKDF2 hashes stored in SQLite."""
     email = request.email.strip().lower()
     password = request.password.strip()
 
@@ -122,7 +123,8 @@ def login(request: LoginRequest):
     )
 
 @router.get("/verify")
-def verify_session(authorization: Optional[str] = Header(None)):
+def verify_session(authorization: Optional[str] = Header(None)) -> Dict[str, Any]:
+    """Validates an active session token against in-memory cache and persistent SQLite store."""
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Authentication token missing or invalid.")
     
@@ -188,7 +190,8 @@ def verify_session(authorization: Optional[str] = Header(None)):
         }
 
 @router.post("/logout")
-def logout(authorization: Optional[str] = Header(None)):
+def logout(authorization: Optional[str] = Header(None)) -> Dict[str, str]:
+    """Terminates an enterprise session and revokes the associated token."""
     if authorization and authorization.startswith("Bearer "):
         token = authorization.split(" ")[1].strip()
         ACTIVE_SESSIONS.pop(token, None)

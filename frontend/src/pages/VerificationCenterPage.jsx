@@ -5,15 +5,8 @@ import { IncidentStatusBadge } from '../components/StatusBadge';
 import { 
   CheckCircle2, 
   AlertTriangle, 
-  RotateCcw, 
-  ShieldCheck, 
   Activity, 
-  Terminal, 
-  RefreshCw,
-  Search,
-  ExternalLink,
-  ShieldAlert,
-  Flame
+  RefreshCw
 } from 'lucide-react';
 
 export const VerificationCenterPage = () => {

@@ -13,8 +13,6 @@ import {
   RotateCw,
   Clock,
   Terminal,
-  Activity,
-  ArrowDown,
   Layers
 } from 'lucide-react';
 

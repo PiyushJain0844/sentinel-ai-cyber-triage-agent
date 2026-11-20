@@ -1,10 +1,11 @@
+from typing import Dict, Any
 from fastapi import APIRouter
 from backend.services.orchestrator import orchestrator
 
 router = APIRouter(prefix="/api/simulation", tags=["Simulation"])
 
 @router.post("/start")
-def start_simulation():
+def start_simulation() -> Dict[str, Any]:
     """Runs the Employee Account Compromise end-to-end multi-agent scenario."""
     result = orchestrator.load_sample_attack_scenario()
     return {
@@ -14,7 +15,7 @@ def start_simulation():
     }
 
 @router.post("/reset")
-def reset_simulation():
+def reset_simulation() -> Dict[str, Any]:
     """Resets the demo environment to clean state."""
     orchestrator.reset_system()
     return {

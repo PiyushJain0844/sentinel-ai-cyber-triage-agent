@@ -7,15 +7,14 @@ from backend.schemas.schemas import (
     IncidentDetailResponse,
     SecurityAlertResponse,
     InvestigationReportResponse,
-    AttackGraphData,
-    ResponseActionResponse,
-    VerificationResponse
+    AttackGraphData
 )
 
 router = APIRouter(prefix="/api/incidents", tags=["Incidents"])
 
 @router.get("", response_model=List[IncidentSummaryResponse])
-def get_incidents():
+def get_incidents() -> List[IncidentSummaryResponse]:
+    """Retrieves all correlated security incidents ordered by risk score."""
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM incidents ORDER BY risk_score DESC, created_at DESC")
@@ -27,7 +26,8 @@ def get_incidents():
         return incidents
 
 @router.get("/{incident_id}", response_model=IncidentDetailResponse)
-def get_incident_detail(incident_id: str):
+def get_incident_detail(incident_id: str) -> IncidentDetailResponse:
+    """Retrieves comprehensive incident details including attack graph, alerts, and report."""
     with get_db() as conn:
         cursor = conn.cursor()
         

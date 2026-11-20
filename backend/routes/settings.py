@@ -1,4 +1,4 @@
-import os
+from typing import Dict, Any
 from fastapi import APIRouter
 from backend.config import settings
 from backend.services.gemini_service import gemini_service
@@ -7,7 +7,8 @@ from backend.database.db import get_db
 router = APIRouter(prefix="/api/settings", tags=["Settings"])
 
 @router.get("/status")
-def get_system_settings_status():
+def get_system_settings_status() -> Dict[str, Any]:
+    """Returns runtime telemetry, model status, and database connectivity."""
     ai_status = "Gemini API Active (Live Model: " + settings.GEMINI_MODEL + ")" if gemini_service.is_configured() else "Deterministic Rule-Based Engine (Fallback Mode)"
     
     # Check DB status

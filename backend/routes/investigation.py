@@ -5,7 +5,7 @@ from backend.schemas.schemas import InvestigationReportResponse
 router = APIRouter(prefix="/api/investigation", tags=["Investigation"])
 
 @router.post("/{incident_id}", response_model=InvestigationReportResponse)
-def trigger_investigation(incident_id: str):
+def trigger_investigation(incident_id: str) -> InvestigationReportResponse:
     """Triggers or updates deep evidence-first investigation for an incident."""
     report = investigation_agent.investigate_incident(incident_id)
     if not report:

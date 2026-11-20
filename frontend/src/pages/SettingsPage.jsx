@@ -2,18 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { useSentinel } from '../context/SentinelContext';
 import { 
-  Settings, 
-  Cpu, 
   Database, 
   ShieldCheck, 
   Globe, 
   Sparkles, 
-  Layers, 
-  Code,
-  Info,
-  CheckCircle2,
-  Lock,
-  ExternalLink
+  Lock
 } from 'lucide-react';
 
 export const SettingsPage = () => {

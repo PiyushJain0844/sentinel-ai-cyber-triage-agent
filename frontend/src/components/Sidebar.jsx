@@ -12,8 +12,7 @@ import {
   Settings,
   Flame,
   X,
-  LogOut,
-  UserCheck
+  LogOut
 } from 'lucide-react';
 
 const navItems = [

@@ -1,9 +1,7 @@
 import sqlite3
-import json
-import os
 import hashlib
 import secrets
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Generator
 from contextlib import contextmanager
 from backend.config import settings
 
@@ -45,14 +43,16 @@ DEMO_USERS = [
     }
 ]
 
-def get_db_connection():
+def get_db_connection() -> sqlite3.Connection:
+    """Creates and returns a thread-safe SQLite connection with Row factory and foreign keys enabled."""
     conn = sqlite3.connect(DB_FILE, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON;")
     return conn
 
 @contextmanager
-def get_db():
+def get_db() -> Generator[sqlite3.Connection, None, None]:
+    """Context manager for SQLite transactions that automatically commits or rolls back."""
     conn = get_db_connection()
     try:
         yield conn
@@ -63,7 +63,7 @@ def get_db():
     finally:
         conn.close()
 
-def seed_demo_users(conn):
+def seed_demo_users(conn: sqlite3.Connection) -> None:
     """Ensures authorized enterprise demo users are seeded and up to date in SQLite."""
     cursor = conn.cursor()
     for user_info in DEMO_USERS:
@@ -91,7 +91,7 @@ def seed_demo_users(conn):
                     (pwd_hash, salt, user_info["role"], user_info["clearance"], user_info["name"], existing["id"])
                 )
 
-def init_db():
+def init_db() -> None:
     """Initializes tables for SENTINEL AI."""
     with get_db() as conn:
         cursor = conn.cursor()
@@ -260,7 +260,7 @@ def init_db():
         # Ensure demo accounts exist in database
         seed_demo_users(conn)
 
-def reset_db():
+def reset_db() -> None:
     """Resets all data back to clean state while preserving demo credentials."""
     with get_db() as conn:
         cursor = conn.cursor()

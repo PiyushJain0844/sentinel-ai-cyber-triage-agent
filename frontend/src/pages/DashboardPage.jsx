@@ -12,11 +12,7 @@ import {
   CheckCircle, 
   Clock, 
   Filter, 
-  ArrowUpRight, 
-  Play,
-  Database,
-  Terminal,
-  ExternalLink
+  ArrowUpRight
 } from 'lucide-react';
 import { 
   AreaChart, 

@@ -5,7 +5,9 @@ from typing import Dict, Any, Optional
 from backend.config import settings
 
 class GeminiService:
-    def __init__(self):
+    """Service wrapper for Google Gemini LLM API with graceful offline fallback."""
+
+    def __init__(self) -> None:
         self.api_key = settings.GEMINI_API_KEY or os.getenv("GEMINI_API_KEY", "")
         self.model = settings.GEMINI_MODEL or "gemini-1.5-flash"
         self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
@@ -14,7 +16,7 @@ class GeminiService:
         """Returns True only if a non-empty, non-placeholder API key is set."""
         return bool(self.api_key and not self.api_key.startswith("your_") and len(self.api_key) > 10)
 
-    def generate_investigation_insights(self, incident: Dict[str, Any], events: list) -> Dict[str, Any]:
+    def generate_investigation_insights(self, incident: Dict[str, Any], events: list) -> Optional[Dict[str, Any]]:
         """
         Calls Gemini API for deep narrative reasoning when configured.
         Returns None if not configured or call fails, prompting graceful fallback.

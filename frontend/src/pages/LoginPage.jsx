@@ -11,10 +11,7 @@ import {
   CheckCircle2, 
   AlertCircle, 
   ArrowRight,
-  Terminal,
-  Activity,
   Layers,
-  Cpu,
   FileCheck
 } from 'lucide-react';
 

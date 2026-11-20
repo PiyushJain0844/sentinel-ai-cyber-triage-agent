@@ -1,5 +1,8 @@
 import os
+import logging
 import uvicorn
+from typing import Dict, Any
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,8 +23,11 @@ from backend.routes import (
     settings as settings_route
 )
 
+logger = logging.getLogger(__name__)
+
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Application lifespan hook initializing SQLite schema, demo accounts, and baseline scenario."""
     # Initialize SQLite tables and seed authorized demo users
     init_db()
     with get_db() as conn:
@@ -36,7 +42,7 @@ async def lifespan(app: FastAPI):
             try:
                 orchestrator.load_sample_attack_scenario()
             except Exception as e:
-                print(f"Warning: could not seed sample logs: {e}")
+                logger.warning(f"Could not seed sample logs on startup: {e}")
     yield
 
 app = FastAPI(
@@ -80,7 +86,8 @@ app.include_router(simulation.router)
 app.include_router(settings_route.router)
 
 @app.get("/")
-def root():
+def root() -> Dict[str, Any]:
+    """Root health and platform metadata endpoint."""
     return {
         "platform": settings.PROJECT_NAME,
         "tagline": "From Alert to Verified Resolution",

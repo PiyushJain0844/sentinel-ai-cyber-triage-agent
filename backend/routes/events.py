@@ -1,6 +1,6 @@
 import json
 from typing import List, Optional, Union
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, HTTPException
 from backend.database.db import get_db
 from backend.schemas.schemas import SecurityEventResponse, SecurityEventCreate
 from backend.services.orchestrator import orchestrator
@@ -13,7 +13,8 @@ def get_events(
     event_type: Optional[str] = None,
     search: Optional[str] = None,
     limit: int = 100
-):
+) -> List[SecurityEventResponse]:
+    """Retrieves normalized security events with optional filtering and search."""
     with get_db() as conn:
         cursor = conn.cursor()
         query = "SELECT * FROM security_events WHERE 1=1"
@@ -47,7 +48,7 @@ def get_events(
         return events
 
 @router.get("/{event_id}", response_model=SecurityEventResponse)
-def get_event_by_id(event_id: str):
+def get_event_by_id(event_id: str) -> SecurityEventResponse:
     """Retrieves an exact event record by its primary key ID."""
     with get_db() as conn:
         cursor = conn.cursor()
@@ -61,7 +62,7 @@ def get_event_by_id(event_id: str):
         return SecurityEventResponse(**d)
 
 @router.post("", response_model=dict)
-def ingest_events(events: Union[SecurityEventCreate, List[SecurityEventCreate]]):
+def ingest_events(events: Union[SecurityEventCreate, List[SecurityEventCreate]]) -> dict:
     """Ingests one or more security logs into the pipeline."""
     if not isinstance(events, list):
         events = [events]

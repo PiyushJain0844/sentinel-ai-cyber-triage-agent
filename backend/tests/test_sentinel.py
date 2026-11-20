@@ -1,6 +1,6 @@
 import pytest
 import os
-import json
+from typing import Generator
 
 os.environ["DATABASE_PATH"] = "test_sentinel.db"
 
@@ -10,16 +10,22 @@ from backend.agents import (
     monitoring_agent,
     detection_agent,
     correlation_agent,
-    investigation_agent,
-    response_agent,
-    verification_agent,
     ALL_AGENTS
 )
-from backend.routes import auth, dashboard, events, incidents, investigation, responses, verification, simulation, settings as settings_route
+from backend.routes import (
+    auth,
+    dashboard,
+    events,
+    investigation,
+    responses,
+    verification,
+    settings as settings_route
+)
 from backend.schemas.schemas import ActionApprovalRequest, VerificationRequest, SecurityEventCreate
 
 @pytest.fixture(autouse=True)
-def clean_db():
+def clean_db() -> Generator[None, None, None]:
+    """Pytest fixture initializing and cleaning the SQLite test database before and after tests."""
     init_db()
     reset_db()
     yield
@@ -267,7 +273,7 @@ def test_authentication_flow():
     assert "Level 5" in admin_res.user.clearance
 
     # 3. Verify SQLite persistence of users and sessions
-    with init_db_conn() if False else auth.get_db() as conn:
+    with auth.get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT email, password_hash, salt, role FROM users WHERE email = 'analyst@sentinel.cyber'")
         user_db = cursor.fetchone()
