@@ -1,15 +1,11 @@
 import json
 import os
-<<<<<<< HEAD
 import secrets
 import threading
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any, Optional
-=======
-from typing import List, Dict, Any
->>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 from backend.agents import (
     monitoring_agent,
     detection_agent,
@@ -25,7 +21,6 @@ class MultiAgentOrchestrator:
 
     def __init__(self) -> None:
         init_db()
-<<<<<<< HEAD
         self._simulation_lock = threading.Lock()
         self._simulation_state: Dict[str, Any] = {
             "simulation_id": None,
@@ -216,8 +211,6 @@ class MultiAgentOrchestrator:
             self._set_simulation_state(status="complete", stage="Complete", result=result)
         except Exception as error:
             self._set_simulation_state(status="failed", stage="Stopped", error=str(error))
-=======
->>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 
     def run_pipeline(self, raw_logs: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
@@ -265,14 +258,11 @@ class MultiAgentOrchestrator:
     def reset_system(self) -> None:
         """Resets all data and reinitializes agent states."""
         reset_db()
-<<<<<<< HEAD
         self._set_simulation_state(
             simulation_id=None, status="idle", stage="Ready", scenario=None,
             total_events=0, events_processed=0, alerts_detected=0,
             incidents_created=0, error=None, result=None
         )
-=======
->>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
         for agent in [monitoring_agent, detection_agent, correlation_agent, investigation_agent, response_agent, verification_agent]:
             agent.status = "IDLE"
             agent.current_task = "System ready / Awaiting input"

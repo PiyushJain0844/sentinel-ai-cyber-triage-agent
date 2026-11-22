@@ -18,9 +18,6 @@ class Settings(BaseModel):
     
     # Database
     DATABASE_PATH: str = os.getenv("DATABASE_PATH", "sentinel.db")
-<<<<<<< HEAD
     LOAD_DEMO_SCENARIO_ON_STARTUP: bool = os.getenv("LOAD_DEMO_SCENARIO_ON_STARTUP", "false").lower() == "true"
-=======
->>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 
 settings = Settings()

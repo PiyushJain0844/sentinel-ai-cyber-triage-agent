@@ -7,7 +7,6 @@ export default {
   theme: {
     extend: {
       colors: {
-<<<<<<< HEAD
         page: {
           bg: "#F7F0EC",
           light: "#FBF6F2",
@@ -34,8 +33,6 @@ export default {
           muted: "#5E5855",
           faint: "#8D8580",
         },
-=======
->>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
         sentinel: {
           bg: "#080D18",
           secondary: "#0D1422",
