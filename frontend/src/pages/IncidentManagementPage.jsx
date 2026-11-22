@@ -1,0 +1,182 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { api } from '../services/api';
+import { useSentinel } from '../context/SentinelContext';
+import { SeverityBadge, IncidentStatusBadge } from '../components/StatusBadge';
+import { 
+  AlertOctagon, 
+  ArrowRight, 
+  Clock, 
+  User, 
+  Layers, 
+  Activity,
+  ShieldAlert
+} from 'lucide-react';
+
+export const IncidentManagementPage = () => {
+  const navigate = useNavigate();
+  const { refreshTrigger } = useSentinel();
+  const [incidents, setIncidents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filterSeverity, setFilterSeverity] = useState('ALL');
+  const [filterStatus, setFilterStatus] = useState('ALL');
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadIncidents() {
+      setLoading(true);
+      try {
+        const data = await api.getIncidents();
+        if (isMounted) {
+          setIncidents(data);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (isMounted) setLoading(false);
+      }
+    }
+    loadIncidents();
+    return () => { isMounted = false; };
+  }, [refreshTrigger]);
+
+  const filtered = incidents.filter(inc => {
+    if (filterSeverity !== 'ALL' && inc.severity !== filterSeverity) return false;
+    if (filterStatus !== 'ALL' && inc.status !== filterStatus) return false;
+    return true;
+  });
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-[#141E2E] border border-[#1E2B42] shadow-lg">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+              Incident Management
+            </h1>
+            <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 text-xs font-mono border border-sky-500/20">
+              CORRELATED CAMPAIGNS
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Aggregated multi-stage attack campaigns correlated across user accounts, endpoints, and threat vectors.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+          <span className="text-white font-bold">{incidents.length}</span> Total Incidents
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-[#141E2E] rounded-2xl p-4 border border-[#1E2B42] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+          <select
+            value={filterSeverity}
+            onChange={(e) => setFilterSeverity(e.target.value)}
+            className="w-full sm:w-auto bg-[#0D1422] border border-[#1E2B42] focus:border-sky-500 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none font-mono transition"
+          >
+            <option value="ALL">All Severities</option>
+            <option value="CRITICAL">CRITICAL</option>
+            <option value="HIGH">HIGH</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LOW">LOW</option>
+          </select>
+
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="w-full sm:w-auto bg-[#0D1422] border border-[#1E2B42] focus:border-sky-500 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none font-mono transition"
+          >
+            <option value="ALL">All Statuses</option>
+            <option value="THREAT_DETECTED">Threat Detected</option>
+            <option value="INVESTIGATION_COMPLETED">Investigation Completed</option>
+            <option value="RESPONSE_PENDING">Response Pending</option>
+            <option value="RESPONSE_EXECUTED">Response Executed</option>
+            <option value="THREAT_CONTAINED">Threat Contained</option>
+            <option value="REOPENED_INVESTIGATION_REQUIRED">Reopened</option>
+          </select>
+        </div>
+
+        <div className="text-xs text-slate-400 font-mono">
+          Showing {filtered.length} correlated incident(s)
+        </div>
+      </div>
+
+      {/* Incident List */}
+      <div className="space-y-4">
+        {loading ? (
+          <div className="p-12 text-center text-slate-400 text-xs font-mono">
+            Loading correlated incidents...
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="p-12 text-center text-slate-400 bg-[#141E2E] rounded-2xl border border-[#1E2B42]">
+            <AlertOctagon className="w-8 h-8 text-slate-500 mx-auto mb-2" />
+            <p className="text-sm font-medium text-slate-300">No incidents found</p>
+            <p className="text-xs text-slate-500 mt-1">Run the attack simulation to generate correlated incidents.</p>
+          </div>
+        ) : (
+          filtered.map((inc) => (
+            <div 
+              key={inc.id}
+              onClick={() => navigate(`/investigation?id=${inc.id}`)}
+              className="group bg-[#141E2E] hover:bg-[#192538]/70 rounded-2xl p-5 border border-[#1E2B42] hover:border-sky-500/40 transition-all cursor-pointer shadow-lg space-y-4"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E2B42]">
+                <div className="flex items-start sm:items-center gap-3">
+                  <div className="p-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 shrink-0 mt-0.5 sm:mt-0">
+                    <ShieldAlert className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-mono font-bold text-xs text-sky-400">{inc.id}</span>
+                      <SeverityBadge severity={inc.severity} />
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-white tracking-tight mt-0.5 break-words">
+                      {inc.title}
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#1E2B42]/60">
+                  <IncidentStatusBadge status={inc.status} />
+                  <div className="flex sm:flex-col items-center sm:items-end gap-1.5 sm:gap-0">
+                    <span className="text-[10px] text-slate-400 uppercase font-mono">Risk:</span>
+                    <span className="text-sm sm:text-base font-black font-mono text-red-400">{inc.risk_score}/100</span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed break-words">
+                {inc.summary}
+              </p>
+
+              {/* Badges / Metrics Row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs font-mono text-slate-400 border-t border-[#1E2B42]/60">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                  <span className="flex items-center gap-1.5 text-amber-300">
+                    <User className="w-3.5 h-3.5 shrink-0" /> {inc.primary_entity_value}
+                  </span>
+                  <span className="flex items-center gap-1.5 text-sky-300">
+                    <Layers className="w-3.5 h-3.5 shrink-0" /> {inc.alert_count} Alerts
+                  </span>
+                  <span className="flex items-center gap-1.5 text-purple-300">
+                    <Activity className="w-3.5 h-3.5 shrink-0" /> Confidence: {inc.confidence_level}%
+                  </span>
+                  <span className="flex items-center gap-1.5 text-slate-400">
+                    <Clock className="w-3.5 h-3.5 shrink-0" /> {inc.first_detected_at?.substring(11, 19)} → {inc.last_activity_at?.substring(11, 19)} UTC
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1 text-sky-400 group-hover:text-sky-300 font-semibold text-xs shrink-0 self-end sm:self-auto">
+                  <span>Open Deep Investigation</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};

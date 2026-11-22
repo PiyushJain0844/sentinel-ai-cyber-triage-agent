@@ -1,0 +1,267 @@
+import json
+import time
+import uuid
+from datetime import datetime, timezone
+from typing import List, Dict, Any, Optional
+from backend.agents.base import BaseAgent
+from backend.database.db import get_db
+
+class ResponseAgent(BaseAgent):
+    def __init__(self):
+        super().__init__(
+            name="Response Agent",
+            role="Targeted remediation proposal, human approval gating & safe simulation execution"
+        )
+
+    def generate_recommendations(self, incident_id: str) -> List[Dict[str, Any]]:
+        """Generates structured response recommendations for an investigated incident."""
+        start_time = time.time()
+        self.update_status("PROCESSING", f"Generating response recommendations for incident {incident_id}")
+
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM incidents WHERE id = ?", (incident_id,))
+            inc = cursor.fetchone()
+            if not inc:
+                self.update_status("FAILED", f"Incident {incident_id} not found")
+                return []
+
+            username = inc["primary_entity_value"] or "Target User"
+            cursor.execute("""SELECT DISTINCT e.id, e.source_ip, e.device_id, e.username, e.event_type
+                              FROM security_events e JOIN security_alerts a ON a.event_id = e.id
+                              WHERE a.correlated_incident_id = ? ORDER BY e.timestamp""", (incident_id,))
+            evidence_rows = [dict(row) for row in cursor.fetchall()]
+            evidence_ids = [row["id"] for row in evidence_rows]
+            source_ip = next((row["source_ip"] for row in evidence_rows if row.get("source_ip")), "the observed source IP")
+            endpoint = next((row["device_id"] for row in reversed(evidence_rows) if row.get("device_id")), "the observed endpoint")
+            session = next((row.get("device_id") for row in evidence_rows if str(row.get("device_id") or "").startswith("SESSION-")), "the associated session")
+
+            # Check if actions already exist
+            cursor.execute("SELECT * FROM response_actions WHERE incident_id = ?", (incident_id,))
+            existing = cursor.fetchall()
+            if existing:
+                actions = []
+                for row in existing:
+                    r = dict(row)
+                    r["supporting_evidence"] = json.loads(r["supporting_evidence_json"]) if r["supporting_evidence_json"] else []
+                    r["simulation_result"] = json.loads(r["simulation_result_json"]) if r["simulation_result_json"] else None
+                    actions.append(r)
+                self.update_status("COMPLETED", "Retrieved existing response recommendations", f"{len(actions)} actions queued", 0)
+                return actions
+
+            # Recommend targeted mitigations
+            recommendations = [
+                {
+                    "id": f"ACT-{uuid.uuid4().hex[:8].upper()}",
+                    "incident_id": incident_id,
+                    "action_type": "REVOKE_SESSION",
+                    "title": f"Revoke the session associated with {username}",
+                    "reason": f"Review and, if confirmed, revoke {session} based on the linked authentication and incident evidence.",
+                    "supporting_evidence": evidence_ids,
+                    "expected_impact": "Would invalidate the selected session in a connected identity provider after approval; no provider is currently connected.",
+                    "risk_level": "LOW",
+                    "status": "PENDING_APPROVAL"
+                },
+                {
+                    "id": f"ACT-{uuid.uuid4().hex[:8].upper()}",
+                    "incident_id": incident_id,
+                    "action_type": "BLOCK_IP",
+                    "title": f"Review perimeter block for {source_ip}",
+                    "reason": f"This address appears in the incident's linked events. Verify ownership and context before blocking.",
+                    "supporting_evidence": evidence_ids,
+                    "expected_impact": "Would add a firewall block after approval and connector setup; no firewall is currently connected.",
+                    "risk_level": "LOW",
+                    "status": "PENDING_APPROVAL"
+                },
+                {
+                    "id": f"ACT-{uuid.uuid4().hex[:8].upper()}",
+                    "incident_id": incident_id,
+                    "action_type": "DISABLE_ACCOUNT",
+                    "title": f"Temporarily Quarantine Account ({username})",
+                    "reason": "Analyst review is required to determine whether account activity warrants temporary suspension.",
+                    "expected_impact": "Would suspend the account after approval through a connected identity provider; no provider is currently connected.",
+                    "supporting_evidence": evidence_ids,
+                    "risk_level": "MEDIUM",
+                    "status": "PENDING_APPROVAL"
+                },
+                {
+                    "id": f"ACT-{uuid.uuid4().hex[:8].upper()}",
+                    "incident_id": incident_id,
+                    "action_type": "ISOLATE_ENDPOINT",
+                    "title": f"Review isolation of {endpoint}",
+                    "reason": "Review the linked endpoint activity and confirm isolation is appropriate before taking action.",
+                    "expected_impact": "Would isolate the endpoint after approval through a connected EDR; no EDR is currently connected.",
+                    "supporting_evidence": evidence_ids,
+                    "risk_level": "HIGH",
+                    "status": "PENDING_APPROVAL"
+                }
+            ]
+
+            for act in recommendations:
+                cursor.execute("""
+                    INSERT INTO response_actions (
+                        id, incident_id, action_type, title, reason, 
+                        supporting_evidence_json, expected_impact, risk_level, status
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    act["id"],
+                    act["incident_id"],
+                    act["action_type"],
+                    act["title"],
+                    act["reason"],
+                    json.dumps(act["supporting_evidence"]),
+                    act["expected_impact"],
+                    act["risk_level"],
+                    act["status"]
+                ))
+
+            # Update incident status to RESPONSE_PENDING
+            cursor.execute("""
+                UPDATE incidents 
+                SET status = 'RESPONSE_PENDING', updated_at = CURRENT_TIMESTAMP 
+                WHERE id = ?
+            """, (incident_id,))
+
+        duration_ms = int((time.time() - start_time) * 1000)
+        self.execution_duration_ms = duration_ms
+        self.update_status(
+            "WAITING_APPROVAL",
+            "Awaiting analyst authorization for response actions",
+            f"Formulated {len(recommendations)} response actions. Waiting for human approval in Response Center.",
+            processed_delta=len(recommendations)
+        )
+        return recommendations
+
+    def process_decision(self, action_id: str, decision: str, decision_by: str = "SOC Lead Analyst", rejection_reason: Optional[str] = None) -> Dict[str, Any]:
+        """Handles human approval or rejection of a recommended remediation action."""
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM response_actions WHERE id = ?", (action_id,))
+            row = cursor.fetchone()
+            if not row:
+                raise ValueError(f"Action {action_id} not found")
+
+            act = dict(row)
+            now_iso = datetime.now(timezone.utc).isoformat()
+
+            if decision == "APPROVE":
+                new_status = "APPROVED"
+                rejection_reason = None
+            elif decision == "REJECT":
+                new_status = "REJECTED"
+            else:
+                raise ValueError("Invalid decision. Must be APPROVE or REJECT.")
+
+            cursor.execute("""
+                UPDATE response_actions 
+                SET status = ?, approval_decision_by = ?, approval_decision_at = ?, rejection_reason = ? 
+                WHERE id = ?
+            """, (new_status, decision_by, now_iso, rejection_reason, action_id))
+
+            act["status"] = new_status
+            act["approval_decision_by"] = decision_by
+            act["approval_decision_at"] = now_iso
+            act["rejection_reason"] = rejection_reason
+
+            self.update_status(
+                "COMPLETED",
+                f"Action {action_id} {new_status} by {decision_by}",
+                f"Human-in-the-loop audit: Action '{act['title']}' was {new_status}."
+            )
+            return act
+
+    def simulate_execution(self, action_id: str) -> Dict[str, Any]:
+        """Simulates the authorized execution in a safe, controlled sandbox."""
+        start_time = time.time()
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM response_actions WHERE id = ?", (action_id,))
+            row = cursor.fetchone()
+            if not row:
+                raise ValueError(f"Action {action_id} not found")
+
+            act = dict(row)
+            if act["status"] not in ["APPROVED", "EXECUTED"]:
+                raise ValueError("Cannot execute action that has not been approved by an analyst.")
+
+            cursor.execute("""SELECT e.username, e.source_ip, e.device_id FROM security_events e
+                              JOIN security_alerts a ON a.event_id = e.id
+                              WHERE a.correlated_incident_id = ? ORDER BY e.timestamp DESC""", (act["incident_id"],))
+            linked = [dict(item) for item in cursor.fetchall()]
+            target_user = next((item["username"] for item in linked if item.get("username")), "the affected account")
+            target_ip = next((item["source_ip"] for item in linked if item.get("source_ip")), "the observed address")
+            target_endpoint = next((item["device_id"] for item in linked if item.get("device_id") and not str(item["device_id"]).startswith("SESSION-")), "the observed endpoint")
+            target_session = next((item["device_id"] for item in linked if str(item.get("device_id") or "").startswith("SESSION-")), "the associated session")
+
+            self.update_status("PROCESSING", f"Simulating execution of {act['title']}")
+
+            action_type = act["action_type"]
+            execution_timestamp = datetime.now(timezone.utc).isoformat()
+            
+            # Safe simulation details
+            if action_type == "REVOKE_SESSION":
+                simulation_result = {
+                    "action_executed": "TOKEN_REVOCATION_BROADCAST",
+                    "target_session": target_session,
+                    "revocation_method": "OAuth/OIDC Introspection Blacklist",
+                    "tokens_blacklisted": 2,
+                    "simulated_latency_ms": 38,
+                    "status": "SUCCESS",
+                    "audit_log": f"[{execution_timestamp}] Simulated session revocation for {target_session}; no external system changed."
+                }
+            elif action_type == "BLOCK_IP":
+                simulation_result = {
+                    "action_executed": "FIREWALL_ACL_UPDATE",
+                    "target_ip": target_ip,
+                    "firewall_rule_id": "FW-RULE-DENY-9024",
+                    "applied_to": ["Edge-PaloAlto-01", "WAF-Cloudflare-Enterprise"],
+                    "simulated_latency_ms": 64,
+                    "status": "SUCCESS",
+                    "audit_log": f"[{execution_timestamp}] Simulated block for {target_ip}; no external firewall changed."
+                }
+            elif action_type == "DISABLE_ACCOUNT":
+                simulation_result = {
+                    "action_executed": "AD_ACCOUNT_LOCK",
+                    "target_account": target_user,
+                    "account_status": "DISABLED_PENDING_FORENSICS",
+                    "active_tokens_purged": True,
+                    "simulated_latency_ms": 52,
+                    "status": "SUCCESS",
+                    "audit_log": f"[{execution_timestamp}] Simulated account suspension for {target_user}; no external identity system changed."
+                }
+            else: # ISOLATE_ENDPOINT
+                simulation_result = {
+                    "action_executed": "EDR_NETWORK_ISOLATION",
+                    "target_endpoint": target_endpoint,
+                    "isolation_type": "CONTAINMENT_VLAN_APPLIED",
+                    "management_ip_preserved": True,
+                    "simulated_latency_ms": 110,
+                    "status": "SUCCESS",
+                    "audit_log": f"[{execution_timestamp}] Simulated endpoint isolation for {target_endpoint}; no external EDR changed."
+                }
+
+            cursor.execute("""
+                UPDATE response_actions 
+                SET status = 'EXECUTED', simulation_result_json = ? 
+                WHERE id = ?
+            """, (json.dumps(simulation_result), action_id))
+
+            # Update incident status to RESPONSE_EXECUTED
+            cursor.execute("""
+                UPDATE incidents 
+                SET status = 'RESPONSE_EXECUTED', updated_at = CURRENT_TIMESTAMP 
+                WHERE id = ?
+            """, (act["incident_id"],))
+
+        duration_ms = int((time.time() - start_time) * 1000)
+        self.execution_duration_ms = duration_ms
+        self.update_status(
+            "COMPLETED",
+            f"Simulated execution of {act['title']} completed successfully",
+            f"Execution telemetry recorded. Safe simulation completed in {duration_ms}ms.",
+            processed_delta=1
+        )
+
+        act["status"] = "EXECUTED"
+        act["simulation_result"] = simulation_result
+        return act

