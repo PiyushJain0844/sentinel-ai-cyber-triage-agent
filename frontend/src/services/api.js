@@ -124,6 +124,7 @@ export const api = {
     return res.json();
   },
 
+<<<<<<< HEAD
   async importEvents(eventsList, sourceName = 'uploaded log file') {
     const res = await fetch(`${API_BASE}/events/import`, {
       method: 'POST',
@@ -137,6 +138,8 @@ export const api = {
     return res.json();
   },
 
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
   // Incidents
   async getIncidents() {
     const res = await fetch(`${API_BASE}/incidents`, {
@@ -245,6 +248,7 @@ export const api = {
       method: 'POST',
       headers: { ...getAuthHeaders() }
     });
+<<<<<<< HEAD
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       throw new Error(body.detail || 'Failed to start simulation');
@@ -255,6 +259,9 @@ export const api = {
   async getSimulationStatus() {
     const res = await fetch(`${API_BASE}/simulation/status`, { headers: { ...getAuthHeaders() } });
     if (!res.ok) throw new Error('Failed to read simulation progress');
+=======
+    if (!res.ok) throw new Error('Failed to start sample attack simulation');
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
     return res.json();
   },
 
@@ -263,10 +270,14 @@ export const api = {
       method: 'POST',
       headers: { ...getAuthHeaders() }
     });
+<<<<<<< HEAD
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       throw new Error(body.detail || 'Failed to reset simulation environment');
     }
+=======
+    if (!res.ok) throw new Error('Failed to reset simulation environment');
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
     return res.json();
   },
 

@@ -27,6 +27,7 @@ class ResponseAgent(BaseAgent):
                 return []
 
             username = inc["primary_entity_value"] or "Target User"
+<<<<<<< HEAD
             cursor.execute("""SELECT DISTINCT e.id, e.source_ip, e.device_id, e.username, e.event_type
                               FROM security_events e JOIN security_alerts a ON a.event_id = e.id
                               WHERE a.correlated_incident_id = ? ORDER BY e.timestamp""", (incident_id,))
@@ -35,6 +36,8 @@ class ResponseAgent(BaseAgent):
             source_ip = next((row["source_ip"] for row in evidence_rows if row.get("source_ip")), "the observed source IP")
             endpoint = next((row["device_id"] for row in reversed(evidence_rows) if row.get("device_id")), "the observed endpoint")
             session = next((row.get("device_id") for row in evidence_rows if str(row.get("device_id") or "").startswith("SESSION-")), "the associated session")
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 
             # Check if actions already exist
             cursor.execute("SELECT * FROM response_actions WHERE incident_id = ?", (incident_id,))
@@ -55,10 +58,17 @@ class ResponseAgent(BaseAgent):
                     "id": f"ACT-{uuid.uuid4().hex[:8].upper()}",
                     "incident_id": incident_id,
                     "action_type": "REVOKE_SESSION",
+<<<<<<< HEAD
                     "title": f"Revoke the session associated with {username}",
                     "reason": f"Review and, if confirmed, revoke {session} based on the linked authentication and incident evidence.",
                     "supporting_evidence": evidence_ids,
                     "expected_impact": "Would invalidate the selected session in a connected identity provider after approval; no provider is currently connected.",
+=======
+                    "title": f"Revoke Active Session & Invalidate Tokens (SESSION-TK-9921)",
+                    "reason": "Immediate termination of hijacked session token stops active C2 exfiltration and unauthorized file read operations.",
+                    "supporting_evidence": ["EVT-2026-1003", "EVT-2026-1005", "EVT-2026-1006"],
+                    "expected_impact": "Active session token invalidated immediately. Legitimate user will be prompted to re-authenticate with MFA.",
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                     "risk_level": "LOW",
                     "status": "PENDING_APPROVAL"
                 },
@@ -66,10 +76,17 @@ class ResponseAgent(BaseAgent):
                     "id": f"ACT-{uuid.uuid4().hex[:8].upper()}",
                     "incident_id": incident_id,
                     "action_type": "BLOCK_IP",
+<<<<<<< HEAD
                     "title": f"Review perimeter block for {source_ip}",
                     "reason": f"This address appears in the incident's linked events. Verify ownership and context before blocking.",
                     "supporting_evidence": evidence_ids,
                     "expected_impact": "Would add a firewall block after approval and connector setup; no firewall is currently connected.",
+=======
+                    "title": "Block Malicious IP at Perimeter Firewall (198.51.100.42)",
+                    "reason": "Source IP responsible for 15 failed logins and subsequent brute-force session takeover.",
+                    "supporting_evidence": ["EVT-2026-1002", "EVT-2026-1003", "EVT-2026-1004"],
+                    "expected_impact": "All incoming and outgoing traffic to 198.51.100.42 dropped at edge firewall.",
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                     "risk_level": "LOW",
                     "status": "PENDING_APPROVAL"
                 },
@@ -78,9 +95,15 @@ class ResponseAgent(BaseAgent):
                     "incident_id": incident_id,
                     "action_type": "DISABLE_ACCOUNT",
                     "title": f"Temporarily Quarantine Account ({username})",
+<<<<<<< HEAD
                     "reason": "Analyst review is required to determine whether account activity warrants temporary suspension.",
                     "expected_impact": "Would suspend the account after approval through a connected identity provider; no provider is currently connected.",
                     "supporting_evidence": evidence_ids,
+=======
+                    "reason": "Account credentials compromised and used for unauthorized lateral file discovery.",
+                    "expected_impact": "User unable to log into any enterprise systems until IT Security performs credential rotation.",
+                    "supporting_evidence": ["EVT-2026-1004", "EVT-2026-1005"],
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                     "risk_level": "MEDIUM",
                     "status": "PENDING_APPROVAL"
                 },
@@ -88,10 +111,17 @@ class ResponseAgent(BaseAgent):
                     "id": f"ACT-{uuid.uuid4().hex[:8].upper()}",
                     "incident_id": incident_id,
                     "action_type": "ISOLATE_ENDPOINT",
+<<<<<<< HEAD
                     "title": f"Review isolation of {endpoint}",
                     "reason": "Review the linked endpoint activity and confirm isolation is appropriate before taking action.",
                     "expected_impact": "Would isolate the endpoint after approval through a connected EDR; no EDR is currently connected.",
                     "supporting_evidence": evidence_ids,
+=======
+                    "title": "Isolate Affected Endpoint (FS-CORP-FIN01)",
+                    "reason": "Host executed obfuscated PowerShell stager payload and initiated outbound C2 burst.",
+                    "expected_impact": "Host disconnected from internal network; retains management channel for forensics.",
+                    "supporting_evidence": ["EVT-2026-1006", "EVT-2026-1007"],
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                     "risk_level": "HIGH",
                     "status": "PENDING_APPROVAL"
                 }
@@ -184,6 +214,7 @@ class ResponseAgent(BaseAgent):
             if act["status"] not in ["APPROVED", "EXECUTED"]:
                 raise ValueError("Cannot execute action that has not been approved by an analyst.")
 
+<<<<<<< HEAD
             cursor.execute("""SELECT e.username, e.source_ip, e.device_id FROM security_events e
                               JOIN security_alerts a ON a.event_id = e.id
                               WHERE a.correlated_incident_id = ? ORDER BY e.timestamp DESC""", (act["incident_id"],))
@@ -193,6 +224,8 @@ class ResponseAgent(BaseAgent):
             target_endpoint = next((item["device_id"] for item in linked if item.get("device_id") and not str(item["device_id"]).startswith("SESSION-")), "the observed endpoint")
             target_session = next((item["device_id"] for item in linked if str(item.get("device_id") or "").startswith("SESSION-")), "the associated session")
 
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
             self.update_status("PROCESSING", f"Simulating execution of {act['title']}")
 
             action_type = act["action_type"]
@@ -202,42 +235,74 @@ class ResponseAgent(BaseAgent):
             if action_type == "REVOKE_SESSION":
                 simulation_result = {
                     "action_executed": "TOKEN_REVOCATION_BROADCAST",
+<<<<<<< HEAD
                     "target_session": target_session,
+=======
+                    "target_session": "SESSION-TK-9921",
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                     "revocation_method": "OAuth/OIDC Introspection Blacklist",
                     "tokens_blacklisted": 2,
                     "simulated_latency_ms": 38,
                     "status": "SUCCESS",
+<<<<<<< HEAD
                     "audit_log": f"[{execution_timestamp}] Simulated session revocation for {target_session}; no external system changed."
+=======
+                    "audit_log": f"[{execution_timestamp}] SESSION-TK-9921 revoked across all identity gateways."
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                 }
             elif action_type == "BLOCK_IP":
                 simulation_result = {
                     "action_executed": "FIREWALL_ACL_UPDATE",
+<<<<<<< HEAD
                     "target_ip": target_ip,
+=======
+                    "target_ip": "198.51.100.42",
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                     "firewall_rule_id": "FW-RULE-DENY-9024",
                     "applied_to": ["Edge-PaloAlto-01", "WAF-Cloudflare-Enterprise"],
                     "simulated_latency_ms": 64,
                     "status": "SUCCESS",
+<<<<<<< HEAD
                     "audit_log": f"[{execution_timestamp}] Simulated block for {target_ip}; no external firewall changed."
+=======
+                    "audit_log": f"[{execution_timestamp}] DROP rule injected for 198.51.100.42 on ingress/egress."
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                 }
             elif action_type == "DISABLE_ACCOUNT":
                 simulation_result = {
                     "action_executed": "AD_ACCOUNT_LOCK",
+<<<<<<< HEAD
                     "target_account": target_user,
+=======
+                    "target_account": "sarah.connor",
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                     "account_status": "DISABLED_PENDING_FORENSICS",
                     "active_tokens_purged": True,
                     "simulated_latency_ms": 52,
                     "status": "SUCCESS",
+<<<<<<< HEAD
                     "audit_log": f"[{execution_timestamp}] Simulated account suspension for {target_user}; no external identity system changed."
+=======
+                    "audit_log": f"[{execution_timestamp}] Account sarah.connor locked in Active Directory domain."
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                 }
             else: # ISOLATE_ENDPOINT
                 simulation_result = {
                     "action_executed": "EDR_NETWORK_ISOLATION",
+<<<<<<< HEAD
                     "target_endpoint": target_endpoint,
+=======
+                    "target_endpoint": "FS-CORP-FIN01",
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                     "isolation_type": "CONTAINMENT_VLAN_APPLIED",
                     "management_ip_preserved": True,
                     "simulated_latency_ms": 110,
                     "status": "SUCCESS",
+<<<<<<< HEAD
                     "audit_log": f"[{execution_timestamp}] Simulated endpoint isolation for {target_endpoint}; no external EDR changed."
+=======
+                    "audit_log": f"[{execution_timestamp}] Host FS-CORP-FIN01 isolated via EDR agent."
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                 }
 
             cursor.execute("""

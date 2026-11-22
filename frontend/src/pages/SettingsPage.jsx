@@ -38,7 +38,10 @@ export const SettingsPage = () => {
   const ai = settingsData.ai_integration || {};
   const db = settingsData.database || {};
   const intel = settingsData.threat_intel || {};
+<<<<<<< HEAD
   const ingestion = settingsData.ingestion || {};
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 
   return (
     <div className="space-y-6">
@@ -187,6 +190,7 @@ export const SettingsPage = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3 rounded-xl bg-[#0D1422] border border-[#1E2B42]">
+<<<<<<< HEAD
               <span className="text-slate-400">Log file import:</span>
               <span className="text-slate-200">{ingestion.file_import || 'JSON, JSONL, NDJSON, CSV'}</span>
             </div>
@@ -197,6 +201,10 @@ export const SettingsPage = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3 rounded-xl bg-[#0D1422] border border-[#1E2B42]">
               <span className="text-slate-400">Simulation:</span>
               <span className="text-slate-200">{ingestion.simulation || 'Synthetic only'}</span>
+=======
+              <span className="text-slate-400">Wazuh SIEM Connector:</span>
+              <span className="text-slate-200">Synthetic Endpoint Feeds</span>
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
             </div>
           </div>
         </div>

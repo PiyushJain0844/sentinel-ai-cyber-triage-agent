@@ -66,11 +66,20 @@ class AlertCorrelationAgent(BaseAgent):
                 # Determine title & summary
                 user_target = next((a.get("username") for a in group_alerts if a.get("username")), "Multiple Users")
                 ip_target = next((a.get("source_ip") for a in group_alerts if a.get("source_ip")), "Unknown IP")
+<<<<<<< HEAD
                 observed = ", ".join(dict.fromkeys(a.get("category", "Security activity") for a in group_alerts))
                 title = f"{observed or 'Security activity'}: {user_target}"
                 summary = (f"{len(group_alerts)} alerts share the entity {user_target}"
                            f"{f' and source address {ip_target}' if ip_target != 'Unknown IP' else ''}. "
                            "Review the linked evidence to confirm whether these events represent a coordinated threat.")
+=======
+                title = f"Multi-Stage Account Compromise & Exfiltration: {user_target}"
+                summary = (
+                    f"Correlated attack campaign targeting employee account '{user_target}' from origin {ip_target}. "
+                    f"Chain includes credential brute-force, anomalous login, privilege misuse, obfuscated execution, "
+                    f"and network data exfiltration ({len(group_alerts)} alerts)."
+                )
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                 
                 # Build React Flow graph structure
                 graph_data = self._build_attack_graph(group_alerts, user_target, ip_target)
@@ -138,6 +147,7 @@ class AlertCorrelationAgent(BaseAgent):
         return incidents
 
     def _build_attack_graph(self, alerts: List[Dict[str, Any]], username: str, source_ip: str) -> Dict[str, Any]:
+<<<<<<< HEAD
         """Summarize observed alerts by category in chronological order; never infer causal links."""
         colors = ["#A66D47", "#D8955C", "#BD5A4A", "#5F806B", "#8A6B9C"]
         nodes = []
@@ -176,3 +186,166 @@ class AlertCorrelationAgent(BaseAgent):
                               "style": {"stroke": colors[index % len(colors)], "strokeWidth": 2, "strokeDasharray": "6 5"}})
         return {"nodes": nodes, "edges": edges, "observed_source_ip": source_ip, "observed_user": username,
                 "relationship_note": "Categories are ordered by first observed alert time. Connections show sequence, not proven causality."}
+=======
+        """Constructs an interactive React Flow node and edge graph visualizing the attack kill-chain."""
+        nodes = []
+        edges = []
+
+        # Find matching alert event IDs for each kill-chain node
+        threat_evt_id = next((a["event_id"] for a in alerts if "Brute-Force" in a.get("title", "") or a.get("source_ip") == source_ip), "EVT-2026-1002")
+        user_evt_id = next((a["event_id"] for a in alerts if "Unfamiliar" in a.get("title", "") or a.get("username") == username), "EVT-2026-1003")
+        session_evt_id = next((a["event_id"] for a in alerts if "Impossible Travel" in a.get("title", "") or "SESSION" in str(a.get("device_id", ""))), "EVT-2026-1004")
+        files_evt_id = next((a["event_id"] for a in alerts if "File" in a.get("title", "") or "Share" in a.get("title", "")), "EVT-2026-1005")
+        exec_evt_id = next((a["event_id"] for a in alerts if "PowerShell" in a.get("title", "") or "Command" in a.get("title", "")), "EVT-2026-1006")
+        c2_evt_id = next((a["event_id"] for a in alerts if "Exfiltration" in a.get("title", "") or "C2" in a.get("title", "")), "EVT-2026-1007")
+
+        # Node 1: External Adversary / Source IP (Threat Actor)
+        nodes.append({
+            "id": "node-threat-ip",
+            "type": "customNode",
+            "data": {
+                "label": f"External Threat Origin\n{source_ip}",
+                "category": "threat_origin",
+                "entity": source_ip,
+                "badge": "Unfamiliar IP / ASN9009",
+                "color": "#EF4444",
+                "event_id": threat_evt_id
+            },
+            "position": {"x": 50, "y": 200}
+        })
+
+        # Node 2: Compromised User Identity
+        nodes.append({
+            "id": "node-compromised-user",
+            "type": "customNode",
+            "data": {
+                "label": f"Compromised Account\n{username}",
+                "category": "user_account",
+                "entity": username,
+                "badge": "QA Engineer / Corporate SSO",
+                "color": "#F59E0B",
+                "event_id": user_evt_id
+            },
+            "position": {"x": 300, "y": 200}
+        })
+
+        # Edge from Threat IP to User
+        edges.append({
+            "id": "edge-ip-user",
+            "source": "node-threat-ip",
+            "target": "node-compromised-user",
+            "label": "15 Brute-Force Logins → Bypass",
+            "animated": True,
+            "style": {"stroke": "#EF4444", "strokeWidth": 2}
+        })
+
+        # Node 3: Active Hijacked Session / Device
+        nodes.append({
+            "id": "node-session",
+            "type": "customNode",
+            "data": {
+                "label": "Hijacked Session\nSESSION-TK-9921",
+                "category": "session_device",
+                "entity": "SESSION-TK-9921",
+                "badge": "Impossible Travel (RO)",
+                "color": "#38BDF8",
+                "event_id": session_evt_id
+            },
+            "position": {"x": 550, "y": 200}
+        })
+
+        edges.append({
+            "id": "edge-user-session",
+            "source": "node-compromised-user",
+            "target": "node-session",
+            "label": "Issued Session Token",
+            "animated": True,
+            "style": {"stroke": "#38BDF8", "strokeWidth": 2}
+        })
+
+        # Node 4: Restricted File Access (Collection)
+        nodes.append({
+            "id": "node-restricted-files",
+            "type": "customNode",
+            "data": {
+                "label": "Confidential Shares\n/shares/finance/*",
+                "category": "sensitive_data",
+                "entity": "Executive & R&D Files",
+                "badge": "Bulk Unauthorized Read",
+                "color": "#A855F7",
+                "event_id": files_evt_id
+            },
+            "position": {"x": 800, "y": 80}
+        })
+
+        edges.append({
+            "id": "edge-session-files",
+            "source": "node-session",
+            "target": "node-restricted-files",
+            "label": "Access Restricted Share",
+            "animated": True,
+            "style": {"stroke": "#A855F7", "strokeWidth": 2}
+        })
+
+        # Node 5: Malicious Command / Process Execution
+        nodes.append({
+            "id": "node-process-exec",
+            "type": "customNode",
+            "data": {
+                "label": "Encoded PowerShell\npowershell.exe -Enc",
+                "category": "execution",
+                "entity": "FS-CORP-FIN01",
+                "badge": "LOLBAS Stager (T1059.001)",
+                "color": "#EF4444",
+                "event_id": exec_evt_id
+            },
+            "position": {"x": 800, "y": 320}
+        })
+
+        edges.append({
+            "id": "edge-session-exec",
+            "source": "node-session",
+            "target": "node-process-exec",
+            "label": "Spawn Hidden Shell",
+            "animated": True,
+            "style": {"stroke": "#EF4444", "strokeWidth": 2}
+        })
+
+        # Node 6: Exfiltration C2 Endpoint
+        nodes.append({
+            "id": "node-c2-exfil",
+            "type": "customNode",
+            "data": {
+                "label": "Adversary C2 Beacon\n203.0.113.199:8443",
+                "category": "c2_exfiltration",
+                "entity": "203.0.113.199",
+                "badge": "50MB Stream (T1041)",
+                "color": "#DC2626",
+                "event_id": c2_evt_id
+            },
+            "position": {"x": 1080, "y": 200}
+        })
+
+        edges.append({
+            "id": "edge-files-c2",
+            "source": "node-restricted-files",
+            "target": "node-c2-exfil",
+            "label": "Package Sensitive Data",
+            "animated": True,
+            "style": {"stroke": "#F59E0B", "strokeDasharray": "5,5"}
+        })
+
+        edges.append({
+            "id": "edge-exec-c2",
+            "source": "node-process-exec",
+            "target": "node-c2-exfil",
+            "label": "Exfiltrate Stream (50MB)",
+            "animated": True,
+            "style": {"stroke": "#DC2626", "strokeWidth": 3}
+        })
+
+        return {
+            "nodes": nodes,
+            "edges": edges
+        }
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d

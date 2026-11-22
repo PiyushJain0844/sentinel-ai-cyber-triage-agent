@@ -4,6 +4,10 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { SentinelProvider } from './context/SentinelContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
+<<<<<<< HEAD
+=======
+import { Sidebar } from './components/Sidebar';
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 import { EvidenceViewerModal } from './components/EvidenceViewerModal';
 
 // Pages
@@ -23,7 +27,11 @@ const AuthenticatedLayout = () => {
 
   return (
     <ProtectedRoute>
+<<<<<<< HEAD
       <div className="soc-shell min-h-screen bg-[#080D18] text-[#F8FAFC] flex flex-col font-sans selection:bg-sky-500 selection:text-slate-900 overflow-x-hidden">
+=======
+      <div className="min-h-screen bg-[#080D18] text-[#F8FAFC] flex flex-col font-sans selection:bg-sky-500 selection:text-slate-900 overflow-x-hidden">
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
         {/* Top SOC Command Bar */}
         <Navbar 
           onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
@@ -31,8 +39,19 @@ const AuthenticatedLayout = () => {
         />
 
         <div className="flex-1 flex overflow-hidden">
+<<<<<<< HEAD
           {/* Main SOC Content Workspace */}
           <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 xl:p-10 max-w-[1680px] mx-auto w-full">
+=======
+          {/* Collapsible Left Navigation Drawer */}
+          <Sidebar 
+            isMobileOpen={isMobileMenuOpen} 
+            onCloseMobile={() => setIsMobileMenuOpen(false)} 
+          />
+
+          {/* Main SOC Content Workspace */}
+          <main className="flex-1 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
             <Outlet />
           </main>
         </div>

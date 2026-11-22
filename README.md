@@ -615,6 +615,7 @@ The following capabilities represent planned architectural enhancements for futu
 * **Active SOAR Integration**: Connectors to execute firewall changes directly via Palo Alto PAN-OS, Cisco ASA, and AWS Security Group APIs.
 * **Distributed Agent Workers**: Fanning out agent task execution using Celery or Redis task queues for high-volume enterprise event streams.
 
+<<<<<<< HEAD
 ## Live data and simulations
 
 The app starts with an empty telemetry database by default. Use **Live Threat Telemetry → Import logs** to ingest a JSON/JSONL/NDJSON or CSV export from a SIEM, EDR, identity provider, or network sensor. JSON can be an event array or an object containing `events`, `records`, `Records`, `value`, or `results`. Common fields such as `@timestamp`, `TimeGenerated`, `SourceIp`, `UserPrincipalName`, `Computer`, `Activity`, `ResultType`, and `Severity` are normalized when importing.
@@ -624,3 +625,6 @@ Imports are processed by the same monitoring, detection, correlation, investigat
 The **Simulate** button creates a fresh synthetic event stream on each run and displays progress as events are ingested. Simulation addresses use documentation-only IP ranges and the generated command marker is never executed. Response actions remain analyst-gated simulations; no identity provider, firewall, or EDR is connected or changed. Vendor connectors and live threat-intelligence lookups are not implemented yet. Set `LOAD_DEMO_SCENARIO_ON_STARTUP=true` only if you explicitly want the legacy fixed sample loaded when the database is empty.
 
 ---
+=======
+---
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d

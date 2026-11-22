@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { api } from '../services/api';
 
 const SentinelContext = createContext(null);
 const SimulationContext = createContext(null);
+=======
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { api } from '../services/api';
+
+const SentinelContext = createContext(null);
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 
 export const SentinelProvider = ({ children }) => {
   const [selectedEvidence, setSelectedEvidence] = useState(null);
@@ -10,7 +17,10 @@ export const SentinelProvider = ({ children }) => {
   const [isSimulationRunning, setIsSimulationRunning] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [notification, setNotification] = useState(null);
+<<<<<<< HEAD
   const [simulationProgress, setSimulationProgress] = useState(null);
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 
   const showNotification = useCallback((message, type = 'info') => {
     const notifId = Date.now();
@@ -50,6 +60,7 @@ export const SentinelProvider = ({ children }) => {
     setSelectedEvidence(null);
   }, []);
 
+<<<<<<< HEAD
   const runSimulation = useCallback(async () => {
     setIsSimulationRunning(true);
     try {
@@ -70,6 +81,15 @@ export const SentinelProvider = ({ children }) => {
       showNotification(`Synthetic run complete: ${result.events_processed || 0} events, ${result.alerts_detected || 0} alerts, ${result.incidents_created || 0} incidents. No external systems were changed.`, 'success');
       triggerRefresh();
       return status;
+=======
+  const runSampleSimulation = useCallback(async () => {
+    setIsSimulationRunning(true);
+    try {
+      const res = await api.startSimulation();
+      showNotification('Sample attack scenario successfully injected & processed across all 6 agents!', 'success');
+      triggerRefresh();
+      return res;
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
     } catch (err) {
       showNotification(`Simulation failed: ${err.message}`, 'error');
       throw err;
@@ -91,15 +111,27 @@ export const SentinelProvider = ({ children }) => {
     }
   }, [showNotification, triggerRefresh]);
 
+<<<<<<< HEAD
   const appValue = useMemo(() => ({
+=======
+  return (
+    <SentinelContext.Provider value={{
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
       selectedEvidence,
       isEvidenceModalOpen,
       openEvidenceViewer,
       closeEvidenceViewer,
+<<<<<<< HEAD
+=======
+      isSimulationRunning,
+      runSampleSimulation,
+      resetEnvironment,
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
       refreshTrigger,
       triggerRefresh,
       notification,
       showNotification
+<<<<<<< HEAD
   }), [selectedEvidence, isEvidenceModalOpen, openEvidenceViewer, closeEvidenceViewer, refreshTrigger, triggerRefresh, notification, showNotification]);
 
   const simulationValue = useMemo(() => ({ isSimulationRunning, simulationProgress, runSimulation, resetEnvironment }),
@@ -108,6 +140,10 @@ export const SentinelProvider = ({ children }) => {
   return (
     <SentinelContext.Provider value={appValue}>
       <SimulationContext.Provider value={simulationValue}>{children}</SimulationContext.Provider>
+=======
+    }}>
+      {children}
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
     </SentinelContext.Provider>
   );
 };
@@ -117,9 +153,12 @@ export const useSentinel = () => {
   if (!context) throw new Error('useSentinel must be used within SentinelProvider');
   return context;
 };
+<<<<<<< HEAD
 
 export const useSimulation = () => {
   const context = useContext(SimulationContext);
   if (!context) throw new Error('useSimulation must be used within SentinelProvider');
   return context;
 };
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d

@@ -15,6 +15,7 @@ class LogMonitoringAgent(BaseAgent):
 
     def normalize_event(self, raw_event: Dict[str, Any]) -> Dict[str, Any]:
         """Normalizes heterogeneous incoming security logs into standard schema."""
+<<<<<<< HEAD
         # Accept common exported field names from cloud identity, Windows and network logs.
         fields = {str(key).lower().replace("_", "").replace(".", ""): value for key, value in raw_event.items()}
         def pick(*names: str) -> Any:
@@ -35,6 +36,20 @@ class LogMonitoringAgent(BaseAgent):
         details = raw_event.get("details") or {}
         if not isinstance(details, dict):
             details = {"source_details": details}
+=======
+        evt_id = raw_event.get("id") or f"EVT-{uuid.uuid4().hex[:8].upper()}"
+        timestamp = raw_event.get("timestamp") or datetime.now(timezone.utc).isoformat()
+        source_ip = raw_event.get("source_ip") or raw_event.get("src_ip") or raw_event.get("client_ip")
+        destination_ip = raw_event.get("destination_ip") or raw_event.get("dst_ip") or raw_event.get("server_ip")
+        username = raw_event.get("username") or raw_event.get("user") or raw_event.get("account")
+        device_id = raw_event.get("device_id") or raw_event.get("host") or raw_event.get("hostname")
+        event_type = (raw_event.get("event_type") or raw_event.get("type") or "SECURITY_EVENT").upper()
+        action = (raw_event.get("action") or raw_event.get("operation") or "UNKNOWN").upper()
+        resource_accessed = raw_event.get("resource_accessed") or raw_event.get("target") or raw_event.get("resource")
+        status = (raw_event.get("status") or raw_event.get("outcome") or "INFORMATIONAL").upper()
+        severity = (raw_event.get("severity") or "INFORMATIONAL").upper()
+        details = raw_event.get("details") or {}
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
         
         # Initial anomaly heuristic
         is_suspicious = False

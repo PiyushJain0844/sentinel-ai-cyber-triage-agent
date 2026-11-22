@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { useSentinel } from '../context/SentinelContext';
 import { SeverityBadge } from '../components/StatusBadge';
+<<<<<<< HEAD
 import { parseSecurityLogFile } from '../utils/parseSecurityLogFile';
 import { 
   Search, 
   RotateCw, 
   Upload,
+=======
+import { 
+  Search, 
+  RotateCw, 
+  PlusCircle, 
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
   Database
 } from 'lucide-react';
 
@@ -17,7 +24,11 @@ export const LiveMonitoringPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [severityFilter, setSeverityFilter] = useState('ALL');
   const [eventTypeFilter, setEventTypeFilter] = useState('ALL');
+<<<<<<< HEAD
   const [isImporting, setIsImporting] = useState(false);
+=======
+  const [isInjecting, setIsInjecting] = useState(false);
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 
   useEffect(() => {
     let isMounted = true;
@@ -42,6 +53,7 @@ export const LiveMonitoringPage = () => {
     return () => { isMounted = false; };
   }, [refreshTrigger, severityFilter, eventTypeFilter, searchTerm]);
 
+<<<<<<< HEAD
   useEffect(() => {
     const timer = setInterval(() => {
       if (document.visibilityState === 'visible') triggerRefresh();
@@ -63,6 +75,34 @@ export const LiveMonitoringPage = () => {
     } finally {
       setIsImporting(false);
       event.target.value = '';
+=======
+  const handleInjectSample = async () => {
+    setIsInjecting(true);
+    try {
+      const customEvent = {
+        timestamp: new Date().toISOString(),
+        source_ip: "198.51.100.99",
+        destination_ip: "10.0.1.25",
+        username: "sarah.connor",
+        device_id: "SESSION-TK-9921",
+        event_type: "NETWORK_TRAFFIC",
+        action: "SUSPICIOUS_BEACON_PROBE",
+        resource_accessed: "PORT_443_SSL_TUNNEL",
+        status: "ALERTED",
+        severity: "CRITICAL",
+        details: {
+          threat_intel_match: "Automated persistent callback probe",
+          notes: "Probe injected to test dynamic detection agent ingestion"
+        }
+      };
+      await api.ingestEvents([customEvent]);
+      showNotification('Custom telemetry event ingested and processed by Monitoring & Detection agents.', 'success');
+      triggerRefresh();
+    } catch (err) {
+      showNotification(`Failed to inject event: ${err.message}`, 'error');
+    } finally {
+      setIsInjecting(false);
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
     }
   };
 
@@ -80,7 +120,11 @@ export const LiveMonitoringPage = () => {
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
+<<<<<<< HEAD
             Import JSON or CSV exports from your SIEM, EDR, identity provider, or network sensor. Events are normalized and analyzed here; direct connectors are not set up yet.
+=======
+            Raw incoming security logs normalized into standardized event schemas with behavioral anomaly detection.
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
           </p>
         </div>
 
@@ -94,11 +138,22 @@ export const LiveMonitoringPage = () => {
             <span className="inline">Refresh</span>
           </button>
 
+<<<<<<< HEAD
           <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#75482D] hover:bg-[#805234] transition cursor-pointer ${isImporting ? 'opacity-50 pointer-events-none' : ''}`}>
             <Upload className="w-4 h-4" />
             <span>{isImporting ? 'Importing...' : 'Import logs'}</span>
             <input className="sr-only" type="file" accept=".json,.jsonl,.ndjson,.csv,application/json,text/csv" disabled={isImporting} onChange={handleImport} />
           </label>
+=======
+          <button
+            onClick={handleInjectSample}
+            disabled={isInjecting}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-950 bg-sky-400 hover:bg-sky-300 transition shadow-md shadow-sky-500/10 disabled:opacity-50"
+          >
+            <PlusCircle className="w-4 h-4 fill-current text-slate-950" />
+            <span>{isInjecting ? 'Ingesting...' : 'Inject Event'}</span>
+          </button>
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
         </div>
       </div>
 
@@ -169,7 +224,11 @@ export const LiveMonitoringPage = () => {
           <div className="p-12 text-center text-slate-400 space-y-2">
             <Database className="w-8 h-8 text-slate-500 mx-auto" />
             <p className="text-sm font-medium text-slate-300">No events found matching your criteria</p>
+<<<<<<< HEAD
             <p className="text-xs text-slate-500">Import a JSON, JSONL, NDJSON, or CSV export from your SIEM, EDR, or identity provider. Direct vendor connectors are not configured.</p>
+=======
+            <p className="text-xs text-slate-500">Try adjusting your filters or click "Inject Event" above.</p>
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
           </div>
         ) : (
           <div className="overflow-x-auto">

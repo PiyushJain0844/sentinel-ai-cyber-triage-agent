@@ -83,6 +83,7 @@ class InvestigationAgent(BaseAgent):
                 })
 
             attack_sequence = [
+<<<<<<< HEAD
                 f"{idx}. {alert.get('category', 'Observed activity')}: {alert.get('title', 'Alert')} "
                 f"(event {alert.get('event_id', 'unknown')}, {alert.get('timestamp', 'time unavailable')})"
                 for idx, alert in enumerate(alerts_data, start=1)
@@ -96,6 +97,26 @@ class InvestigationAgent(BaseAgent):
                 f"Review the linked evidence for {incident.get('primary_entity_value') or 'the affected entity'} before containment.",
                 "Confirm account, endpoint, and network context with the relevant system owners.",
                 "Choose an approved response only after validating the evidence and operational impact."
+=======
+                "1. Credential Brute-Force against employee SSO (15 attempts from external IP 198.51.100.42)",
+                "2. Valid Credential Authenticated from unfamiliar European IP (ASN9009)",
+                "3. Impossible Travel Anomaly verified (9,480 km distance in 51 minutes)",
+                "4. High-Value File Discovery & Bulk Read across /shares/finance and /shares/r_and_d",
+                "5. Stealth Process Execution via Obfuscated PowerShell stager (LOLBAS)",
+                "6. Automated 50MB Encrypted Outbound Exfiltration stream to Adversary C2 (203.0.113.199:8443)"
+            ]
+
+            missing_info = [
+                "Endpoint memory dump from FS-CORP-FIN01 for in-depth injection analysis",
+                "Full TLS decryption log for exfiltrated archive content inspection"
+            ]
+
+            next_steps = [
+                "Immediately revoke active OAuth/SAML tokens for session SESSION-TK-9921",
+                "Enforce perimeter firewall block rule on threat IP 198.51.100.42",
+                "Quarantine affected Active Directory user sarah.connor pending password reset",
+                "Isolate endpoint FS-CORP-FIN01 from internal subnet"
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
             ]
 
             # Attempt Gemini AI analysis
@@ -111,9 +132,15 @@ class InvestigationAgent(BaseAgent):
                 is_ai_generated = 0
                 ai_model = "SENTINEL-Deterministic-Engine-v1.0"
                 exec_summary = (
+<<<<<<< HEAD
                     f"Evidence-first analysis found {len(findings)} linked alert findings for "
                     f"'{incident.get('primary_entity_value') or 'the affected entity'}'. Treat each finding as an indicator "
                     "for analyst review; this report does not establish compromise on its own."
+=======
+                    f"Evidence-First Analysis: Account compromise confirmed for '{incident['primary_entity_value']}' "
+                    f"with {len(findings)} corroborating telemetry findings. The attack sequence progresses from "
+                    f"external credential brute force through file collection to active C2 exfiltration."
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                 )
 
             report_id = f"RPT-{uuid.uuid4().hex[:8].upper()}"
@@ -129,7 +156,11 @@ class InvestigationAgent(BaseAgent):
                 report_id,
                 incident_id,
                 exec_summary,
+<<<<<<< HEAD
                 (alerts_data[0].get("category") or "Security investigation") if alerts_data else "Security investigation",
+=======
+                "Account Takeover & Data Exfiltration",
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
                 incident["severity"],
                 incident["risk_score"],
                 incident["confidence_level"],
@@ -162,7 +193,11 @@ class InvestigationAgent(BaseAgent):
             "id": report_id,
             "incident_id": incident_id,
             "summary": exec_summary,
+<<<<<<< HEAD
             "threat_category": (alerts_data[0].get("category") or "Security investigation") if alerts_data else "Security investigation",
+=======
+            "threat_category": "Account Takeover & Data Exfiltration",
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
             "severity": incident["severity"],
             "risk_score": incident["risk_score"],
             "confidence_level": incident["confidence_level"],

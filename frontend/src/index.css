@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+<<<<<<< HEAD
 :root {
   --page-bg: #F7F0EC;
   --page-bg-light: #FBF6F2;
@@ -42,15 +43,22 @@
   }
 }
 
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 @layer base {
   * {
     border-color: #1E2B42;
   }
   body {
+<<<<<<< HEAD
     background-color: #F7F0EC;
     color: #202020;
     color-scheme: light;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+=======
+    background-color: #080D18;
+    color: #F8FAFC;
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
   }
 }
 
@@ -61,21 +69,37 @@
 }
 
 ::-webkit-scrollbar-track {
+<<<<<<< HEAD
   background: #F1E5DE;
 }
 
 ::-webkit-scrollbar-thumb {
   background: #C8B4A5;
+=======
+  background: #080D18;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E2B42;
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
+<<<<<<< HEAD
   background: #A9856A;
+=======
+  background: #24344D;
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 }
 
 /* React Flow Dark SOC Tweaks */
 .react-flow__background {
+<<<<<<< HEAD
   background-color: #F7F0EC !important;
+=======
+  background-color: #080D18 !important;
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 }
 
 .react-flow__edge-path {
@@ -84,13 +108,19 @@
 
 .react-flow__controls {
   box-shadow: none;
+<<<<<<< HEAD
   border: 1px solid #E2D2C6;
   background: #FFFBF7;
+=======
+  border: 1px solid #1E2B42;
+  background: #0D1422;
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
   border-radius: 8px;
   overflow: hidden;
 }
 
 .react-flow__controls-button {
+<<<<<<< HEAD
   background: #FFFBF7;
   border-bottom: 1px solid #E2D2C6;
   fill: #75482D;
@@ -99,6 +129,16 @@
 .react-flow__controls-button:hover {
   background: #F1E5DE;
   fill: #95613F;
+=======
+  background: #0D1422;
+  border-bottom: 1px solid #1E2B42;
+  fill: #94A3B8;
+}
+
+.react-flow__controls-button:hover {
+  background: #141E2E;
+  fill: #38BDF8;
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 }
 
 /* Clean Enterprise Card & Panel Helpers */
@@ -111,6 +151,7 @@
   background: #192538;
   border: 1px solid #24344D;
 }
+<<<<<<< HEAD
 
 /* Warm, restrained motion for the public sign-in screen. */
 .login-page .page-enter {
@@ -708,3 +749,5 @@
   .soc-shell .hero-primary-action:hover { transform: none; }
   .soc-shell .soc-title-sheen { color: #95613f; background: none; }
 }
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d

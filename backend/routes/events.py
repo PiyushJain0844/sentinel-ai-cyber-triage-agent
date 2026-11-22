@@ -1,7 +1,12 @@
 import json
+<<<<<<< HEAD
 from typing import Any, Dict, List, Optional, Union
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Body
+=======
+from typing import List, Optional, Union
+from fastapi import APIRouter, HTTPException
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 from backend.database.db import get_db
 from backend.schemas.schemas import SecurityEventResponse, SecurityEventCreate
 from backend.services.orchestrator import orchestrator
@@ -77,6 +82,7 @@ def ingest_events(events: Union[SecurityEventCreate, List[SecurityEventCreate]])
         "message": f"Processed {len(events)} events through SENTINEL AI pipeline",
         "pipeline_result": result
     }
+<<<<<<< HEAD
 
 @router.post("/import", response_model=dict)
 def import_events(payload: Dict[str, Any] = Body(...)) -> dict:
@@ -100,3 +106,5 @@ def import_events(payload: Dict[str, Any] = Body(...)) -> dict:
         prepared.append(item)
     result = orchestrator.run_pipeline(prepared)
     return {"status": "success", "source_name": source_name, "imported_at": imported_at, **result}
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d

@@ -44,10 +44,16 @@ def get_system_settings_status() -> Dict[str, Any]:
             "records": record_counts
         },
         "threat_intel": {
+<<<<<<< HEAD
             "virustotal": "Configured (lookup not yet wired)" if settings.VIRUSTOTAL_API_KEY else "Not connected",
             "abuseipdb": "Configured (lookup not yet wired)" if settings.ABUSEIPDB_API_KEY else "Not connected"
         },
         "ingestion": {"file_import": "Ready (JSON, JSONL, NDJSON, CSV)", "vendor_connectors": "Not connected", "simulation": "Synthetic only; no external systems changed"},
+=======
+            "virustotal": "Active" if settings.VIRUSTOTAL_API_KEY else "Simulated / Synthetic Feeds",
+            "abuseipdb": "Active" if settings.ABUSEIPDB_API_KEY else "Simulated / Synthetic Feeds"
+        },
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
         "agents": {
             "count": 6,
             "names": [

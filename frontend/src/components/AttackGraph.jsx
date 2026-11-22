@@ -25,6 +25,7 @@ const categoryIcons = {
   session_device: Cpu,
   sensitive_data: FolderLock,
   execution: Terminal,
+<<<<<<< HEAD
   c2_exfiltration: Radio,
   'Credential Access': User,
   'Initial Access': Globe,
@@ -41,6 +42,20 @@ const CustomAttackNode = ({ data, sourcePosition = Position.Right, targetPositio
       style={{ borderColor: data.color || '#38BDF8' }}
     >
       <Handle type="target" position={targetPosition} className="!w-2 !h-2 !bg-[#C69B78] !border-0" />
+=======
+  c2_exfiltration: Radio
+};
+
+// Custom React Flow Node for SOC aesthetics
+const CustomAttackNode = ({ data }) => {
+  const Icon = categoryIcons[data.category] || Info;
+
+  return (
+    <div className="relative group min-w-[170px] max-w-[210px] bg-[#0D1422] border-2 rounded-xl p-3 shadow-xl transition-all duration-200 hover:border-sky-400"
+      style={{ borderColor: data.color || '#38BDF8' }}
+    >
+      <Handle type="target" position={Position.Left} className="!w-2 !h-2 !bg-sky-400 !border-0" />
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
       
       <div className="flex items-center gap-2 mb-2">
         <div 
@@ -67,7 +82,11 @@ const CustomAttackNode = ({ data, sourcePosition = Position.Right, targetPositio
         </div>
       )}
 
+<<<<<<< HEAD
       <Handle type="source" position={sourcePosition} className="!w-2 !h-2 !bg-[#C69B78] !border-0" />
+=======
+      <Handle type="source" position={Position.Right} className="!w-2 !h-2 !bg-sky-400 !border-0" />
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
     </div>
   );
 };
@@ -79,6 +98,7 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
 
   const nodes = useMemo(() => {
     if (!graphData?.nodes) return [];
+<<<<<<< HEAD
     const count = graphData.nodes.length;
     return graphData.nodes.map((node, index) => {
       const row = Math.floor(index / 3);
@@ -91,6 +111,12 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
         sourcePosition: index < count - 1 && nextRow !== row ? Position.Bottom : (row % 2 === 0 ? Position.Right : Position.Left),
       };
     });
+=======
+    return graphData.nodes.map(n => ({
+      ...n,
+      type: 'customNode'
+    }));
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
   }, [graphData]);
 
   const edges = useMemo(() => {
@@ -101,10 +127,17 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
         type: MarkerType.ArrowClosed,
         width: 14,
         height: 14,
+<<<<<<< HEAD
         color: e.style?.stroke || '#95613F'
       },
       labelStyle: { fill: '#71675F', fontSize: 10, fontWeight: 600, fontFamily: 'monospace' },
       labelBgStyle: { fill: '#FFFBF7', fillOpacity: 0.95, rx: 6, stroke: '#E2D2C6', strokeWidth: 1 },
+=======
+        color: e.style?.stroke || '#38BDF8'
+      },
+      labelStyle: { fill: '#94A3B8', fontSize: 10, fontWeight: 600, fontFamily: 'monospace' },
+      labelBgStyle: { fill: '#080D18', fillOpacity: 0.9, rx: 4, stroke: '#1E293B', strokeWidth: 1 },
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
       labelBgPadding: [6, 4]
     }));
   }, [graphData]);
@@ -114,7 +147,11 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
       <div className="h-80 flex flex-col items-center justify-center bg-[#080D18] rounded-xl border border-[#1E293B] text-slate-400 p-6">
         <Info className="w-8 h-8 text-sky-400 mb-2 animate-bounce" />
         <p className="text-sm font-medium text-white">No active attack graph nodes</p>
+<<<<<<< HEAD
         <p className="text-xs mt-1 text-slate-400">Import security telemetry or run a synthetic exercise to build an evidence graph.</p>
+=======
+        <p className="text-xs mt-1 text-slate-400">Trigger sample simulation or ingest security telemetry to correlate attack paths.</p>
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
       </div>
     );
   }
@@ -125,12 +162,20 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
       <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-10 flex items-center gap-1.5 sm:gap-2 bg-[#0D1422] px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-[#1E2B42]">
         <span className="w-2 h-2 rounded-full bg-red-400 shrink-0" />
         <span className="text-[10px] sm:text-xs font-mono font-semibold text-slate-200">
+<<<<<<< HEAD
           Alert groups by first seen
+=======
+          Correlated Attack Kill-Chain Graph
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
         </span>
       </div>
 
       <div className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 z-10 hidden sm:flex items-center gap-1.5 bg-[#0D1422] px-2.5 py-1 rounded-md border border-[#1E2B42] text-[11px] font-mono text-slate-400">
+<<<<<<< HEAD
         <Maximize2 className="w-3 h-3 text-sky-400" /> Drag to explore
+=======
+        <Maximize2 className="w-3 h-3 text-sky-400" /> Interactive Pan & Zoom
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
       </div>
 
       <ReactFlow
@@ -146,7 +191,16 @@ export const AttackGraph = ({ graphData, onSelectNode }) => {
           // If node has event evidence, trigger evidence viewer
           if (node.data?.event_id) {
             openEvidenceViewer(node.data.event_id);
+<<<<<<< HEAD
           }
+=======
+          } else if (node.id === 'node-threat-ip') openEvidenceViewer('EVT-2026-1002');
+          else if (node.id === 'node-compromised-user') openEvidenceViewer('EVT-2026-1003');
+          else if (node.id === 'node-session') openEvidenceViewer('EVT-2026-1004');
+          else if (node.id === 'node-restricted-files') openEvidenceViewer('EVT-2026-1005');
+          else if (node.id === 'node-process-exec') openEvidenceViewer('EVT-2026-1006');
+          else if (node.id === 'node-c2-exfil') openEvidenceViewer('EVT-2026-1007');
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
         }}
       >
         <Background color="#1E2B42" gap={20} size={1} />

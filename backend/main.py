@@ -27,17 +27,29 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+<<<<<<< HEAD
     """Initialize the local database and demo accounts; telemetry starts empty by default."""
+=======
+    """Application lifespan hook initializing SQLite schema, demo accounts, and baseline scenario."""
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
     # Initialize SQLite tables and seed authorized demo users
     init_db()
     with get_db() as conn:
         seed_demo_users(conn)
     
+<<<<<<< HEAD
     if settings.LOAD_DEMO_SCENARIO_ON_STARTUP:
         with get_db() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT COUNT(*) FROM security_events")
             count = cursor.fetchone()[0]
+=======
+    # Check if empty, load baseline sample scenario automatically
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM security_events")
+        count = cursor.fetchone()[0]
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
         if count == 0:
             try:
                 orchestrator.load_sample_attack_scenario()

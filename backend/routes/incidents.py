@@ -2,7 +2,10 @@ import json
 from typing import List
 from fastapi import APIRouter, HTTPException
 from backend.database.db import get_db
+<<<<<<< HEAD
 from backend.agents import correlation_agent
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 from backend.schemas.schemas import (
     IncidentSummaryResponse,
     IncidentDetailResponse,
@@ -49,6 +52,7 @@ def get_incident_detail(incident_id: str) -> IncidentDetailResponse:
             ORDER BY timestamp ASC
         """, (incident_id,))
         alerts = [SecurityAlertResponse(**dict(r)) for r in cursor.fetchall()]
+<<<<<<< HEAD
         if alerts:
             alert_dicts = [alert.model_dump() for alert in alerts]
             representative_ip = next((alert.source_ip for alert in alerts if alert.source_ip), "Unknown address")
@@ -56,6 +60,8 @@ def get_incident_detail(incident_id: str) -> IncidentDetailResponse:
                 alert_dicts, incident_dict.get("primary_entity_value") or "Unknown entity", representative_ip
             )
             attack_graph = AttackGraphData(**fresh_graph)
+=======
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
 
         # 3. Investigation Report
         cursor.execute("SELECT * FROM investigation_reports WHERE incident_id = ? ORDER BY created_at DESC LIMIT 1", (incident_id,))

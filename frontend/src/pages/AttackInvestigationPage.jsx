@@ -152,10 +152,17 @@ export const AttackInvestigationPage = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div className="flex items-center gap-2 text-xs font-mono uppercase text-slate-400 font-bold">
                 <GitBranch className="w-4 h-4 text-sky-400 shrink-0" />
+<<<<<<< HEAD
                 <span>Evidence timeline</span>
               </div>
               <span className="text-[11px] sm:text-xs text-slate-500 font-mono">
                 Groups are ordered by first alert · links show order, not proven cause
+=======
+                <span>Attack Reconstruction & Kill-Chain Flow</span>
+              </div>
+              <span className="text-[11px] sm:text-xs text-slate-500 font-mono">
+                Select any node to inspect log evidence
+>>>>>>> 0411107271d51a7da0d5920148bf2c96e305b40d
               </span>
             </div>
             <AttackGraph graphData={incidentDetail.attack_graph} />
